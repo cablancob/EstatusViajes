@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/FondoGrafico"
+    android:clickable="true"
+    tools:context=".ConsultaViajes">
+
+    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".MainActivity">
+
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/ListaViajes"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:fadeScrollbars="false"
+            android:scrollbars="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/Consultar" />
+
+        <TextView
+            android:id="@+id/Titulo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:text="FECHAS"
+            style="@style/Titulos"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/DesdeTitulo"
+            style="@style/Titulos"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="24dp"
+            android:layout_marginTop="30dp"
+            android:text="DESDE:"
+            app:layout_constraintEnd_toStartOf="@+id/DesdeContenido"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/Titulo" />
+
+        <TextView
+            android:id="@+id/HastaTitulo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="24dp"
+            android:layout_marginTop="25dp"
+            android:text="HASTA:"
+            style="@style/Titulos"
+            app:layout_constraintEnd_toStartOf="@+id/HastaContenido"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/DesdeTitulo" />
+
+        <TextView
+            android:id="@+id/DesdeContenido"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="24dp"
+            android:layout_marginTop="30dp"
+            android:text="AAAA-MM-DD"
+            style="@style/Contenido"
+            app:layout_constraintEnd_toStartOf="@+id/Calendario1"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/DesdeTitulo"
+            app:layout_constraintTop_toBottomOf="@+id/Titulo" />
+
+        <ImageView
+            android:id="@+id/Calendario1"
+            android:layout_width="31dp"
+            android:layout_height="31dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="24dp"
+            android:adjustViewBounds="false"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/DesdeContenido"
+            app:layout_constraintTop_toBottomOf="@+id/Titulo"
+            app:srcCompat="@drawable/ic_date_range" />
+
+        <TextView
+            android:id="@+id/HastaContenido"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="24dp"
+            android:layout_marginTop="25dp"
+            android:text="AAAA-MM-DD"
+            style="@style/Contenido"
+            app:layout_constraintEnd_toStartOf="@+id/Calendario2"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/HastaTitulo"
+            app:layout_constraintTop_toBottomOf="@+id/DesdeContenido" />
+
+        <ImageView
+            android:id="@+id/Calendario2"
+            android:layout_width="31dp"
+            android:layout_height="31dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="15dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/HastaContenido"
+            app:layout_constraintTop_toBottomOf="@+id/Calendario1"
+            app:srcCompat="@drawable/ic_date_range" />
+
+        <Button
+            android:id="@+id/Consultar"
+            style="@style/Botones"
+            android:layout_width="wrap_content"
+            android:layout_height="29dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="24dp"
+            android:text="CONSULTAR"
+            app:layout_constraintEnd_toStartOf="@+id/Graficos"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/HastaContenido" />
+
+        <Button
+            android:id="@+id/Graficos"
+            style="@style/Botones"
+            android:layout_width="wrap_content"
+            android:layout_height="29dp"
+            android:layout_marginTop="24dp"
+            android:text="ESTADISTICAS"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/Consultar"
+            app:layout_constraintTop_toBottomOf="@+id/HastaContenido" />
+
+        <FrameLayout
+            android:id="@+id/Frame"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        </FrameLayout>
+
+
+    </android.support.constraint.ConstraintLayout>
+
+</FrameLayout>

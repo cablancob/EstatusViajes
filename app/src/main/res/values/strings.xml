@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Taksio Servicios</string>
+    <string name="Completado">COMPLETADO</string>
+    <string name="NoAtendido">NO ATENDIDO</string>
+</resources>

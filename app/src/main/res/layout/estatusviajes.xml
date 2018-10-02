@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/FechaTitulo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Fecha:"
+        android:textAppearance="@style/Titulos"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/Fecha"
+        style="@style/Contenido"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="8dp"
+        android:text="2018-01-01"
+        app:layout_constraintStart_toEndOf="@+id/FechaTitulo"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/EstatusTitulo"
+        style="@style/Titulos"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Estatus: "
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/FechaTitulo" />
+
+    <TextView
+        android:id="@+id/Estatus"
+        style="@style/Contenido"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:text="TRIP_ENDED"
+        app:layout_constraintStart_toEndOf="@+id/EstatusTitulo"
+        app:layout_constraintTop_toBottomOf="@+id/Fecha" />
+
+    <TextView
+        android:id="@+id/CantidadTitulo"
+        style="@style/Titulos"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Cantidad:"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/EstatusTitulo" />
+
+    <TextView
+        android:id="@+id/Cantidad"
+        style="@style/Contenido"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="8dp"
+        android:text="0"
+        app:layout_constraintStart_toEndOf="@+id/CantidadTitulo"
+        app:layout_constraintTop_toBottomOf="@+id/Estatus" />
+
+
+    <TextView
+        android:id="@+id/EstatusT"
+        style="@style/Titulos"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Estatus: "
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/Cantidad" />
+
+    <TextView
+        android:id="@+id/EstatusC"
+        style="@style/Contenido"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:text="TRIP_ENDED"
+        app:layout_constraintStart_toEndOf="@+id/EstatusT"
+        app:layout_constraintTop_toBottomOf="@+id/Cantidad" />
+
+    <TextView
+        android:id="@+id/CantidadT"
+        style="@style/Titulos"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Cantidad:"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/EstatusT" />
+
+    <TextView
+        android:id="@+id/CantidadC"
+        style="@style/Contenido"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="8dp"
+        android:text="0"
+        app:layout_constraintStart_toEndOf="@+id/CantidadT"
+        app:layout_constraintTop_toBottomOf="@+id/EstatusT" />
+
+
+    <View
+        android:id="@+id/LineaNegra"
+        android:layout_width="0dp"
+        android:layout_height="0.5dp"
+        android:layout_marginTop="24dp"
+        android:background="@color/GraficoTexto"
+        android:text="TextView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/CantidadT" />
+</android.support.constraint.ConstraintLayout>

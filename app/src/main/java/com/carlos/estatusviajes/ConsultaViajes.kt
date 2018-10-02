@@ -1,0 +1,343 @@
+package com.carlos.estatusviajes
+
+import Controlador.ControladorBD
+import android.app.AlertDialog
+import android.app.DatePickerDialog
+import android.app.ProgressDialog
+import android.content.Context
+import android.net.ConnectivityManager
+import android.os.Bundle
+import android.support.v4.app.Fragment
+import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.LinearLayoutManager
+import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.DatePicker
+import android.widget.Toast
+import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
+import kotlinx.android.synthetic.main.fragment_consulta_viajes.*
+import kotlinx.android.synthetic.main.graficos_menu.*
+import okhttp3.*
+import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.*
+
+
+class ConsultaViajes : Fragment() {
+
+    private var cal = Calendar.getInstance()
+    private var bd: ControladorBD? = null
+    val formatoFecha = "yyyy-MM-dd"
+    val formatoHora = "HH:mm:ss"
+    var fechaConsultaI = 0L
+    var fechaConsultaF = 0L
+
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflater.inflate(R.layout.fragment_consulta_viajes, container, false)
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+
+        bd = ControladorBD(activity!!.applicationContext)
+
+        val dateListener = object : DatePickerDialog.OnDateSetListener {
+            override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
+                cal = Calendar.getInstance()
+                cal.set(Calendar.YEAR, year)
+                cal.set(Calendar.MONTH, month)
+                cal.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+
+                DesdeContenido.text = SimpleDateFormat(formatoFecha).format(cal.time).toString()
+
+                cal.set(Calendar.YEAR, year)
+                cal.set(Calendar.MONTH, month)
+                cal.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+                cal.set(Calendar.HOUR_OF_DAY, 0)
+                cal.set(Calendar.MINUTE, 0)
+                cal.set(Calendar.SECOND, 0)
+                //cal.add(Calendar.HOUR, -4)
+                var temporal = cal.time
+
+                fechaConsultaI = cal.timeInMillis / 1000
+
+            }
+
+        }
+
+        val dateListener2 = object : DatePickerDialog.OnDateSetListener {
+            override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
+                cal = Calendar.getInstance()
+                cal.set(Calendar.YEAR, year)
+                cal.set(Calendar.MONTH, month)
+                cal.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+
+
+                HastaContenido.text = SimpleDateFormat(formatoFecha).format(cal.time).toString()
+
+                cal = Calendar.getInstance()
+                cal.set(Calendar.YEAR, year)
+                cal.set(Calendar.MONTH, month)
+                cal.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+                cal.set(Calendar.HOUR_OF_DAY, 23)
+                cal.set(Calendar.MINUTE, 59)
+                cal.set(Calendar.SECOND, 59)
+                // cal.add(Calendar.HOUR, -12)
+
+                fechaConsultaF = cal.timeInMillis / 1000
+
+            }
+
+        }
+
+        Graficos.setOnClickListener {
+            MenuGraficos(it)
+        }
+
+        Consultar.setOnClickListener(object : View.OnClickListener {
+            override fun onClick(v: View?) {
+                var progressbar = ProgressDialog(v!!.context)
+                progressbar.setMessage("Cargando Datos")
+                if (ValidarCampos()) {
+                    bd!!.Drop()
+                    bd!!.Create()
+                    if (verifyAvailableNetwork((activity as MainActivity))) {
+                        progressbar.show()
+                        fetchJson(progressbar, fechaConsultaI, fechaConsultaF)
+                    } else {
+                        Toast.makeText(context, "No hay conexion a internet, por favor validar", Toast.LENGTH_SHORT).show()
+                    }
+
+                }
+             /*   ListaViajes.adapter = AdaptadorPrincipal(bd!!.Select())
+                Graficos.visibility = View.VISIBLE*/
+
+            }
+
+        })
+
+
+        Calendario1!!.setOnClickListener(object : View.OnClickListener {
+            override fun onClick(v: View?) {
+                cal = Calendar.getInstance()
+                var Calendario = DatePickerDialog(v!!.context, dateListener, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH))
+                Calendario.datePicker.maxDate = System.currentTimeMillis()
+                Calendario.show()
+            }
+
+        })
+
+        Calendario2!!.setOnClickListener(object : View.OnClickListener {
+            override fun onClick(v: View?) {
+                cal = Calendar.getInstance()
+                var Calendario = DatePickerDialog(v!!.context, dateListener2, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH))
+                Calendario.datePicker.maxDate = System.currentTimeMillis()
+                Calendario.show()
+
+
+            }
+
+        })
+
+        ListaViajes.setItemViewCacheSize(200)
+        ListaViajes.setDrawingCacheEnabled(true)
+        ListaViajes.layoutManager = LinearLayoutManager(activity!!.applicationContext)
+    }
+
+    fun fetchJson(progressDialog: ProgressDialog, fechaInicial: Long, fechaFinal: Long = 1535774399L) {
+
+        Log.d("LOG:","COMIENZO DE CICLO")
+
+        var url = "https://services.taksio.net/services"
+
+
+        if ((fechaInicial != 0L) and (fechaFinal == 0L)) {
+            url = url + "?start=${fechaInicial}"
+
+        }
+        if ((fechaInicial == 0L) and (fechaFinal != 0L)) {
+            url = url + "?end=${fechaFinal}"
+
+        }
+        if ((fechaInicial != 0L) and (fechaFinal != 0L)) {
+            url = url + "?start=${fechaInicial}&end=${fechaFinal}"
+
+        }
+
+        //DEBUG
+        //url = url + "?start=1533096000&end=1533268799"
+        val client = OkHttpClient()
+
+
+        client.newCall(Request.Builder()
+                .url(url)
+                .addHeader("authorization", "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU0NTM0MmEwLWExOTktNGJhOC1iZjU5LWY4ZWRiYTE4Mjk3MiIsImlwIjoiMTI3LjAuMC4xIiwiaWF0IjoxNTA5NzU0ODQzfQ.lrJSPmkRs3ka8JckL9WZSPTbvl018ZB8EPiRP9AvPS2w9D0La-NvoL7tTDhswAFY6_Od3Ot-jDlcsN9zVuiSmI02ZZ5paUklLDYV9WjMQO0MLbGU8GiB6IwsXYTZqJ8-dn-B46JVhMrZbFLLTfETss6e4r-hzJsK4hXmQObWAfBBbW3QRQXMlAIrbFURhwZdafyd7o7BUdficlb4Sxtl473IypDu9N5RS0gngvmQFKm5nRDgCIQWDHjy20Mr2U8Ola84x8BzS5GswBU44p2z1vjFCZ_UBFauC2Z_8HA-U9UbGq2Q6EoFX3GV91SyjZwFRw40bLcjf-DkdAdE2g22vg")
+                .build()).enqueue(object : Callback {
+            override fun onFailure(call: Call?, e: IOException?) {
+                println("ERROR: ${e!!.message}")
+
+                (activity as MainActivity).runOnUiThread {
+                    progressDialog.dismiss()
+                    Toast.makeText(context, "Hubo un problema en la consulta, por favor verifique su conexión a Internet e intente de nuevo", Toast.LENGTH_SHORT).show()
+                }
+
+
+            }
+
+            override fun onResponse(call: Call?, response: Response?) {
+
+
+                activity!!.runOnUiThread {
+                    var list: MutableList<Viajes>
+                    val listType = object : TypeToken<List<Viajes>>() {
+
+                    }.type
+
+                    if (DesdeContenido.text != "AAAA-MM-DD") {
+
+                        cal = Calendar.getInstance()
+                        cal.set(Calendar.YEAR, DesdeContenido.text.split("-")[0].toInt())
+                        cal.set(Calendar.MONTH, DesdeContenido.text.split("-")[1].toInt() - 1)
+                        cal.set(Calendar.DATE, DesdeContenido.text.split("-")[2].toInt())
+
+                    } else {
+                        cal = Calendar.getInstance()
+                        cal.set(Calendar.YEAR, 2018)
+                        cal.set(Calendar.MONTH, 2)
+                        cal.set(Calendar.DATE, 9)
+                    }
+
+
+
+                    list = GsonBuilder().create().fromJson(response?.body()?.string(), listType)
+
+
+
+                    list.forEach {
+                        if (it.desc.trim() != "TRIP_CANCELLED") {
+                            val date = Date(it.request_time.split(".").get(0).toInt() * 1000L)
+                            // format of the date
+                            val jdf = SimpleDateFormat(formatoFecha)
+                            jdf.setTimeZone(TimeZone.getTimeZone("GMT-4"))
+                            val hora = SimpleDateFormat(formatoHora)
+                            hora.timeZone = TimeZone.getTimeZone("GMT-4")
+
+
+
+                                bd!!.Insert(
+                                        Viajes(it.desc.trim(),
+                                                jdf.format(date).trim(),
+                                                it.demand.split(":")[1].trim(),
+                                                when {
+                                                    it.supply == null -> {
+                                                        "-"
+                                                    }
+                                                    else -> {
+                                                        it.supply.split(":")[1].trim()
+                                                    }
+
+                                                },
+                                                hora.format(date).toString().trim(),
+                                                features(it.features.origin, it.features.destination),
+                                                billing(fare(it.billing.fare.amount))
+                                        )
+                                )
+
+
+                        }
+                    }
+
+
+                    bd!!.ActualizarDatosUsuarios(context!!)
+
+                    ListaViajes.adapter = AdaptadorPrincipal(bd!!.Select())
+                    Graficos.visibility = View.VISIBLE
+                    progressDialog.dismiss()
+
+                    Log.d("LOG:","FIN DE CICLO")
+
+
+                }
+            }
+
+        }
+        )
+    }
+
+    fun ValidarCampos(): Boolean {
+        var boolean = true
+        if (!DesdeContenido.text.equals("AAAA-MM-DD") and !HastaContenido.text.equals("AAAA-MM-DD")) {
+            if (fechaConsultaF < fechaConsultaI) {
+                Toast.makeText(activity!!.applicationContext, "El campo fecha HASTA no puede ser menor que el campo fecha DESDE", Toast.LENGTH_LONG).show()
+                boolean = false
+            }
+        }
+        return boolean
+    }
+
+    fun verifyAvailableNetwork(activity: AppCompatActivity):Boolean{
+        val connectivityManager=activity.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo=connectivityManager.activeNetworkInfo
+        //return  networkInfo!=null && networkInfo.isConnected
+        return true
+    }
+
+    fun MenuGraficos(view: View) {
+        val dialogo_layout = layoutInflater.inflate(R.layout.graficos_menu, null)
+        val dialogo = AlertDialog.Builder(view.context).setView(dialogo_layout)
+
+        val dialogo_show = dialogo.show()
+
+        dialogo_show.graficos_total.setOnClickListener {
+            dialogo_show.cancel()
+            (context as AppCompatActivity).supportFragmentManager
+                    .beginTransaction()
+                    .add(R.id.Frame,GraficoTotal(),"GRAFICOS_TOTALES")
+                    .addToBackStack(null)
+                    .commit()
+        }
+
+        dialogo_show.graficos_detalles.setOnClickListener {
+            dialogo_show.cancel()
+            (context as AppCompatActivity).supportFragmentManager
+                    .beginTransaction()
+                    .add(R.id.Frame, GraficoDetalle(),"GRAFICOS DETALLES")
+                    .addToBackStack(null)
+                    .commit()
+        }
+
+        dialogo_show.graficos_total_driver.setOnClickListener {
+            dialogo_show.cancel()
+            (context as AppCompatActivity).supportFragmentManager
+                    .beginTransaction()
+                    .add(R.id.Frame,GraficoTotalDriver(), "GRAFICO TOTAL DRIVER")
+                    .addToBackStack(null)
+                    .commit()
+        }
+
+
+        dialogo_show.graficos_detalle_rider.setOnClickListener {
+            dialogo_show.cancel()
+            (context as AppCompatActivity).supportFragmentManager
+                    .beginTransaction()
+                    .add(R.id.Frame,GraficoDetalleRider(), "PRUEBA")
+                    .addToBackStack(null)
+                    .commit()
+        }
+
+
+
+
+
+
+
+
+
+    }
+
+}
