@@ -1,10 +1,9 @@
-package com.carlos.estatusviajes
+package com.taksio.servicestatus
 
 
 import Controlador.ControladorBD
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Color
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
@@ -24,8 +23,6 @@ import com.github.mikephil.charting.utils.MPPointF
 import com.github.mikephil.charting.utils.Transformer
 import com.github.mikephil.charting.utils.ViewPortHandler
 import kotlinx.android.synthetic.main.fragment_grafico_total_driver.*
-import kotlinx.android.synthetic.main.fragment_grafico_total_driver.view.*
-import kotlin.math.max
 
 
 class GraficoTotalDriver : Fragment() {
@@ -60,7 +57,7 @@ class GraficoTotalDriver : Fragment() {
             DataSet.valueTextSize = letra
             DataSet.valueTextColor = ContextCompat.getColor(view!!.context, R.color.GraficoTexto)
             DataSet.color = ContextCompat.getColor(view!!.context, R.color.CompletadoColor)
-            DataSet.valueFormatter = IValueFormatter { value, entry, dataSetIndex, viewPortHandler ->  value.toInt().toString()}
+            DataSet.valueFormatter = IValueFormatter { value, _, _, _ -> value.toInt().toString() }
             DataSet.setDrawValues(false)
             data_final.add(DataSet)
             Etiquetas.add(bd.UsuarioDatos(it.driver).name)
@@ -72,7 +69,7 @@ class GraficoTotalDriver : Fragment() {
         x.position = XAxis.XAxisPosition.BOTTOM_INSIDE
         x.labelCount = 3
         x.textSize = letra
-        x.valueFormatter = IAxisValueFormatter { value, axis -> Etiquetas.get(value.toInt()) }
+        x.valueFormatter = IAxisValueFormatter { value, _ -> Etiquetas.get(value.toInt()) }
         x.setDrawGridLines(false)
 
 

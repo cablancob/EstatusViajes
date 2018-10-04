@@ -6,8 +6,8 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
-import com.carlos.estatusviajes.*
 import com.google.gson.GsonBuilder
+import com.taksio.servicestatus.*
 import okhttp3.*
 import java.io.IOException
 
@@ -41,19 +41,19 @@ class ControladorBD(context: Context) : SQLiteOpenHelper(context, NOMBRE_BD, nul
         valores.put(Tablas.Personas.COLUMNA_ORIGIN, viajes.features.origin)
         valores.put(Tablas.Personas.COLUMNA_DESTINO, viajes.features.destination)
         valores.put(Tablas.Personas.COLUMNA_TKS, viajes.billing.fare.amount)
-        bd!!.insert(Tablas.Personas.NOMBRE_TABLA, null, valores)
+        bd.insert(Tablas.Personas.NOMBRE_TABLA, null, valores)
     }
 
 
     fun Drop() {
-        bd!!.execSQL("DROP TABLE IF EXISTS ${Tablas.Personas.NOMBRE_TABLA}")
+        bd.execSQL("DROP TABLE IF EXISTS ${Tablas.Personas.NOMBRE_TABLA}")
 
 
         //bd!!.execSQL("DROP TABLE IF EXISTS ${Tablas.Usuarios.NOMBRE_TABLA}")
     }
 
     fun Create() {
-        bd!!.execSQL("CREATE TABLE ${Tablas.Personas.NOMBRE_TABLA} " +
+        bd.execSQL("CREATE TABLE ${Tablas.Personas.NOMBRE_TABLA} " +
                 "(" +
                 "${Tablas.Personas.COLUMNA_FECHA} TEXT NULL," +
                 "${Tablas.Personas.COLUMNA_DESC} TEXT NULL DEFAULT '-'," +
@@ -65,7 +65,7 @@ class ControladorBD(context: Context) : SQLiteOpenHelper(context, NOMBRE_BD, nul
                 "${Tablas.Personas.COLUMNA_TKS} TEXT NULL DEFAULT '0'" +
                 ")")
 
-        bd!!.execSQL("CREATE TABLE IF NOT EXISTS ${Tablas.Usuarios.NOMBRE_TABLA} " +
+        bd.execSQL("CREATE TABLE IF NOT EXISTS ${Tablas.Usuarios.NOMBRE_TABLA} " +
                 "(" +
                 "${Tablas.Usuarios.COLUMNA_UID} TEXT NOT NULL , " +
                 "${Tablas.Usuarios.COLUMNA_NOMBRE} TEXT NOT NULL DEFAULT '-', " +
@@ -79,7 +79,7 @@ class ControladorBD(context: Context) : SQLiteOpenHelper(context, NOMBRE_BD, nul
     fun Select(): MutableList<ViajesContados> {
         val lista: MutableList<ViajesContados> = mutableListOf()
         val cursor: Cursor
-        cursor = bd!!.rawQuery(
+        cursor = bd.rawQuery(
                 "SELECT " +
                         "A.${Tablas.Personas.COLUMNA_FECHA}, " +
                         "IFNULL(B.C,'0'), " +
@@ -118,7 +118,7 @@ class ControladorBD(context: Context) : SQLiteOpenHelper(context, NOMBRE_BD, nul
     fun ConsultaViaje(fecha: String): MutableList<ViajeDetalle> {
         val lista = ArrayList<ViajeDetalle>()
         val cursor: Cursor
-        cursor = bd!!.rawQuery(
+        cursor = bd.rawQuery(
                 "SELECT " +
                         "${Tablas.Personas.COLUMNA_DEMAND},  " +
                         "${Tablas.Personas.COLUMNA_DESC},  " +
@@ -144,7 +144,7 @@ class ControladorBD(context: Context) : SQLiteOpenHelper(context, NOMBRE_BD, nul
     fun ConsultaRider(fecha: String, status: String, rider: String): MutableList<ViajeRiderDetalle> {
         val lista = ArrayList<ViajeRiderDetalle>()
         val cursor: Cursor
-        cursor = bd!!.rawQuery(
+        cursor = bd.rawQuery(
                 "SELECT " +
                         "${Tablas.Personas.COLUMNA_SUPPLY},  " +
                         "${Tablas.Personas.COLUMNA_HORA}, " +
@@ -173,7 +173,7 @@ class ControladorBD(context: Context) : SQLiteOpenHelper(context, NOMBRE_BD, nul
     fun ActualizarDatosUsuarios(context: Context) {
         val lista = ArrayList<Datos>()
         var cursor: Cursor
-        cursor = bd!!.rawQuery(
+        cursor = bd.rawQuery(
                 "SELECT ${Tablas.Personas.COLUMNA_DEMAND} " +
                         "FROM ${Tablas.Personas.NOMBRE_TABLA} " +
                         "WHERE ${Tablas.Personas.COLUMNA_DEMAND} NOT IN " +
@@ -212,7 +212,7 @@ class ControladorBD(context: Context) : SQLiteOpenHelper(context, NOMBRE_BD, nul
                         Log.d("RIDER UUID", it.uid)
                         Log.d("RIDER NOMBRE", list.name)
                         Log.d("", "------------------------")
-                        bd!!.execSQL("INSERT INTO ${Tablas.Usuarios.NOMBRE_TABLA} " +
+                        bd.execSQL("INSERT INTO ${Tablas.Usuarios.NOMBRE_TABLA} " +
                                 "( " +
                                 "${Tablas.Usuarios.COLUMNA_UID} ," +
                                 "${Tablas.Usuarios.COLUMNA_NOMBRE} ," +
@@ -236,7 +236,7 @@ class ControladorBD(context: Context) : SQLiteOpenHelper(context, NOMBRE_BD, nul
 
         cursor.close()
 
-        cursor = bd!!.rawQuery(
+        cursor = bd.rawQuery(
                 "SELECT ${Tablas.Personas.COLUMNA_SUPPLY} " +
                         "FROM ${Tablas.Personas.NOMBRE_TABLA} " +
                         "WHERE ${Tablas.Personas.COLUMNA_SUPPLY} NOT IN " +
@@ -277,7 +277,7 @@ class ControladorBD(context: Context) : SQLiteOpenHelper(context, NOMBRE_BD, nul
                         Log.d("RIDER UUID", it.uid)
                         Log.d("RIDER NOMBRE", "${list.name1} ${list.lastname1}")
                         Log.d("", "------------------------")
-                        bd!!.execSQL("INSERT INTO ${Tablas.Usuarios.NOMBRE_TABLA} " +
+                        bd.execSQL("INSERT INTO ${Tablas.Usuarios.NOMBRE_TABLA} " +
                                 "( " +
                                 "${Tablas.Usuarios.COLUMNA_UID} ," +
                                 "${Tablas.Usuarios.COLUMNA_NOMBRE} ," +
@@ -302,7 +302,7 @@ class ControladorBD(context: Context) : SQLiteOpenHelper(context, NOMBRE_BD, nul
         var datos: MutableList<GraficoTotalO> = mutableListOf()
         val cursor: Cursor
 
-        cursor = bd!!.rawQuery(
+        cursor = bd.rawQuery(
                 "SELECT CASE " +
                         "WHEN ${Tablas.Personas.COLUMNA_DESC} == 'TRIP_ENDED' THEN" +
                         "'COMPLETADO' ELSE " +
@@ -330,7 +330,7 @@ class ControladorBD(context: Context) : SQLiteOpenHelper(context, NOMBRE_BD, nul
         var datos: MutableList<GraficoTotalD> = mutableListOf()
         val cursor: Cursor
 
-        cursor = bd!!.rawQuery(
+        cursor = bd.rawQuery(
                 "SELECT A.${Tablas.Personas.COLUMNA_FECHA}, " +
                         "IFNULL(B.C,'0') " +
                         "FROM " +
@@ -362,7 +362,7 @@ class ControladorBD(context: Context) : SQLiteOpenHelper(context, NOMBRE_BD, nul
         var datos: MutableList<GraficoTotalD> = mutableListOf()
         val cursor: Cursor
 
-        cursor = bd!!.rawQuery(
+        cursor = bd.rawQuery(
                 "SELECT A.${Tablas.Personas.COLUMNA_FECHA}, " +
                         "IFNULL(B.C,'0') " +
                         "FROM " +
@@ -394,7 +394,7 @@ class ControladorBD(context: Context) : SQLiteOpenHelper(context, NOMBRE_BD, nul
         var datos: MutableList<GraficoTD> = mutableListOf()
         val cursor: Cursor
 
-        cursor = bd!!.rawQuery(
+        cursor = bd.rawQuery(
                 "SELECT ${Tablas.Personas.COLUMNA_SUPPLY}, " +
                         "COUNT(*) " +
                         "FROM ${Tablas.Personas.NOMBRE_TABLA} " +
@@ -421,7 +421,7 @@ class ControladorBD(context: Context) : SQLiteOpenHelper(context, NOMBRE_BD, nul
         val cursor: Cursor
 
 
-        cursor = bd!!.rawQuery("SELECT " +
+        cursor = bd.rawQuery("SELECT " +
                 "A.${Tablas.Personas.COLUMNA_DEMAND}, " +
                 "IFNULL(B.C,'0'), " +
                 "IFNULL(C.N,'0') " +
@@ -459,9 +459,9 @@ class ControladorBD(context: Context) : SQLiteOpenHelper(context, NOMBRE_BD, nul
 
     fun UsuarioDatos(uid: String): DatosUsuario {
 
-        var nombre = ""
+        var nombre: String
         var cursor: Cursor
-        cursor = bd!!.rawQuery(
+        cursor = bd.rawQuery(
                 "SELECT " +
                         "${Tablas.Usuarios.COLUMNA_NOMBRE}," +
                         "${Tablas.Usuarios.COLUMNA_EMAIL}," +

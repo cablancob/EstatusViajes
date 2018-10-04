@@ -1,4 +1,4 @@
-package com.carlos.estatusviajes
+package com.taksio.servicestatus
 
 
 import Controlador.ControladorBD
@@ -73,7 +73,7 @@ class RiderAdaptador(val viaje: MutableList<ViajeRiderDetalle>) : RecyclerView.A
             holder.view.tksT.visibility = View.GONE
         }
         if (dato.supply != "-") {
-            var datos = bd!!.UsuarioDatos(dato.supply)
+            var datos = bd.UsuarioDatos(dato.supply)
             holder.view.driverC.text = datos.name
             holder.view.telefonoC.text = datos.phone
             holder.view.riderHora.text = dato.hora

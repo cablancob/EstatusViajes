@@ -1,4 +1,4 @@
-package com.carlos.estatusviajes
+package com.taksio.servicestatus
 
 import java.io.Serializable
 

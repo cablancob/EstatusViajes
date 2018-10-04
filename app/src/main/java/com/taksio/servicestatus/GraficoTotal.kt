@@ -1,4 +1,4 @@
-package com.carlos.estatusviajes
+package com.taksio.servicestatus
 
 
 import Controlador.ControladorBD
@@ -14,7 +14,6 @@ import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.formatter.IValueFormatter
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
 import kotlinx.android.synthetic.main.fragment_grafico_total.*
-import kotlinx.android.synthetic.main.fragment_grafico_total.view.*
 
 
 class GraficoTotal : Fragment() {
@@ -34,7 +33,7 @@ class GraficoTotal : Fragment() {
 
 
         var contador = 0
-        bd!!.GraficoTotalF().forEach {
+        bd.GraficoTotalF().forEach {
             entries = mutableListOf()
             entries.add(BarEntry(contador.toFloat(), it.y.toFloat()))
             if (it.desc == "COMPLETADO") {
@@ -42,14 +41,14 @@ class GraficoTotal : Fragment() {
                 DataSet.valueTextSize = letra
                 DataSet.valueTextColor = ContextCompat.getColor(view!!.context, R.color.GraficoTexto)
                 DataSet.color = colores[1]
-                DataSet.valueFormatter = IValueFormatter { value, entry, dataSetIndex, viewPortHandler -> value.toInt().toString() }
+                DataSet.valueFormatter = IValueFormatter { value, _, _, _ -> value.toInt().toString() }
                 data_final.add(DataSet)
             } else {
                 var DataSet = BarDataSet(entries, it.desc)
                 DataSet.valueTextSize = letra
                 DataSet.valueTextColor = ContextCompat.getColor(view!!.context, R.color.GraficoTexto)
                 DataSet.color = colores[0]
-                DataSet.valueFormatter = IValueFormatter { value, entry, dataSetIndex, viewPortHandler -> value.toInt().toString() }
+                DataSet.valueFormatter = IValueFormatter { value, _, _, _ -> value.toInt().toString() }
                 data_final.add(DataSet)
             }
             contador += 1
@@ -61,7 +60,7 @@ class GraficoTotal : Fragment() {
         x.textSize = letra
         x.isEnabled = false
 
-        GraficoT.axisRight.setEnabled(false)
+        GraficoT.axisRight.isEnabled = false
 
         var y = GraficoT.axisLeft
         y.granularity = 20f

@@ -1,11 +1,11 @@
-package com.carlos.estatusviajes
+package com.taksio.servicestatus
 
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v7.app.AppCompatActivity
-import java.util.ArrayList
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -72,7 +72,7 @@ class MainActivity : AppCompatActivity() {
     fun programa() {
         supportFragmentManager
                 .beginTransaction()
-                .add(R.id.Frame,ConsultaViajes(),"VIAJES")
+                .add(R.id.Frame, ConsultaViajes(), "VIAJES")
                 .addToBackStack(null)
                 .commit()
     }

@@ -1,4 +1,4 @@
-package com.carlos.estatusviajes
+package com.taksio.servicestatus
 
 import Controlador.ControladorBD
 import android.os.Bundle
@@ -7,15 +7,14 @@ import android.support.v4.content.ContextCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.github.mikephil.charting.components.AxisBase
-import kotlinx.android.synthetic.main.fragment_grafico_detalle.*
 import com.github.mikephil.charting.components.YAxis
-import com.github.mikephil.charting.data.*
+import com.github.mikephil.charting.data.Entry
+import com.github.mikephil.charting.data.LineData
+import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IAxisValueFormatter
 import com.github.mikephil.charting.formatter.IValueFormatter
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
-import kotlinx.android.synthetic.main.fragment_grafico_detalle.view.*
-import kotlinx.android.synthetic.main.fragment_grafico_total.*
+import kotlinx.android.synthetic.main.fragment_grafico_detalle.*
 
 
 class GraficoDetalle : Fragment() {
@@ -35,8 +34,8 @@ class GraficoDetalle : Fragment() {
 
         var ArrayString = ArrayList<String>()
 
-        var datosCompletados = bd!!.GraficoTotalDetalleCompletado()
-        var datosNoAtendido = bd!!.GraficoTotalDetalleCNoAtendido()
+        var datosCompletados = bd.GraficoTotalDetalleCompletado()
+        var datosNoAtendido = bd.GraficoTotalDetalleCNoAtendido()
 
         var entradaCompletados: MutableList<Entry> = mutableListOf()
         var entradaNoAtendido: MutableList<Entry> = mutableListOf()
@@ -68,7 +67,7 @@ class GraficoDetalle : Fragment() {
         setNoAtendidos.setCircleColor(colores[2])
         setNoAtendidos.circleRadius = radio
         setNoAtendidos.lineWidth = radio
-        setNoAtendidos.valueFormatter = IValueFormatter { value, entry, dataSetIndex, viewPortHandler -> value.toInt().toString() }
+        setNoAtendidos.valueFormatter = IValueFormatter { value, _, _, _ -> value.toInt().toString() }
 
         val setCompletados = LineDataSet(entradaCompletados, getString(R.string.Completado))
         setCompletados.axisDependency = YAxis.AxisDependency.LEFT
@@ -78,7 +77,7 @@ class GraficoDetalle : Fragment() {
         setCompletados.setCircleColor(colores[2])
         setCompletados.circleRadius = radio
         setCompletados.lineWidth = radio
-        setCompletados.valueFormatter = IValueFormatter { value, entry, dataSetIndex, viewPortHandler -> value.toInt().toString() }
+        setCompletados.valueFormatter = IValueFormatter { value, _, _, _ -> value.toInt().toString() }
 
         val dataSets = ArrayList<ILineDataSet>()
 
@@ -86,7 +85,7 @@ class GraficoDetalle : Fragment() {
         dataSets.add(setCompletados)
 
         var x = GraficoD.xAxis
-        x.valueFormatter = IAxisValueFormatter { value, axis -> ArrayString.get(value.toInt()) }
+        x.valueFormatter = IAxisValueFormatter { value, _ -> ArrayString.get(value.toInt()) }
         x.labelRotationAngle = -45f
         x.labelCount = 3
         x.textColor = ContextCompat.getColor(view!!.context, R.color.GraficoTexto)

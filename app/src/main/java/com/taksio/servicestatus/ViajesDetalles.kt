@@ -1,7 +1,6 @@
-package com.carlos.estatusviajes
+package com.taksio.servicestatus
 
 import Controlador.ControladorBD
-import android.app.ProgressDialog
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
@@ -11,12 +10,8 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.google.gson.GsonBuilder
 import kotlinx.android.synthetic.main.detalleviaje.view.*
 import kotlinx.android.synthetic.main.fragment_viajes_detalles.*
-import okhttp3.*
-import java.io.IOException
-import java.util.concurrent.CountDownLatch
 
 
 class ViajesDetalles : Fragment() {
@@ -54,14 +49,14 @@ class DetalleAdaptador(val viajes: MutableList<ViajeDetalle>) : RecyclerView.Ada
 
         var bd = ControladorBD(holder.view.context)
 
-        var datos = bd!!.UsuarioDatos(viaje.rider)
+        var datos = bd.UsuarioDatos(viaje.rider)
         holder.view.contenidoRider.text = datos.name
         holder.view.contenidoEmail.text = datos.email
         holder.view.contenidoCel.text = datos.phone
         holder.view.contenidoCantidad.text = viaje.count.toString()
 
         if (viaje.estatus.trim() == "TRIP_ENDED") {
-            holder.view.contenidoStatus.setTextColor(ContextCompat.getColor(holder.view.context ,R.color.CompletadoColor))
+            holder.view.contenidoStatus.setTextColor(ContextCompat.getColor(holder.view.context, R.color.CompletadoColor))
             holder.view.contenidoStatus.text = (holder.view.context as AppCompatActivity).resources.getString(R.string.Completado)
         } else {
             holder.view.contenidoStatus.setTextColor(ContextCompat.getColor(holder.view.context, R.color.NoAtendidoColor))

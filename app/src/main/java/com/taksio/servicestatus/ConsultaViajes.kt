@@ -1,9 +1,8 @@
-package com.carlos.estatusviajes
+package com.taksio.servicestatus
 
 import Controlador.ControladorBD
 import android.app.AlertDialog
 import android.app.DatePickerDialog
-import android.app.ProgressDialog
 import android.content.Context
 import android.net.ConnectivityManager
 import android.os.Bundle
@@ -62,7 +61,6 @@ class ConsultaViajes : Fragment() {
                 cal.set(Calendar.MINUTE, 0)
                 cal.set(Calendar.SECOND, 0)
                 //cal.add(Calendar.HOUR, -4)
-                var temporal = cal.time
 
                 fechaConsultaI = cal.timeInMillis / 1000
 
@@ -101,14 +99,15 @@ class ConsultaViajes : Fragment() {
 
         Consultar.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View?) {
-                var progressbar = ProgressDialog(v!!.context)
-                progressbar.setMessage("Cargando Datos")
                 if (ValidarCampos()) {
+                    val dialogo = AlertDialog.Builder(view!!.context)
+                    dialogo.setView(layoutInflater.inflate(R.layout.layout_loading_dialog, null))
+                    dialogo.setCancelable(false)
+                    dialogo.create()
                     bd!!.Drop()
                     bd!!.Create()
                     if (verifyAvailableNetwork((activity as MainActivity))) {
-                        progressbar.show()
-                        fetchJson(progressbar, fechaConsultaI, fechaConsultaF)
+                        fetchJson(fechaConsultaI, fechaConsultaF)
                     } else {
                         Toast.makeText(context, "No hay conexion a internet, por favor validar", Toast.LENGTH_SHORT).show()
                     }
@@ -145,11 +144,11 @@ class ConsultaViajes : Fragment() {
         })
 
         ListaViajes.setItemViewCacheSize(200)
-        ListaViajes.setDrawingCacheEnabled(true)
+        ListaViajes.isDrawingCacheEnabled = true
         ListaViajes.layoutManager = LinearLayoutManager(activity!!.applicationContext)
     }
 
-    fun fetchJson(progressDialog: ProgressDialog, fechaInicial: Long, fechaFinal: Long = 1535774399L) {
+    fun fetchJson(fechaInicial: Long, fechaFinal: Long) {
 
         Log.d("LOG:","COMIENZO DE CICLO")
 
@@ -182,7 +181,6 @@ class ConsultaViajes : Fragment() {
                 println("ERROR: ${e!!.message}")
 
                 (activity as MainActivity).runOnUiThread {
-                    progressDialog.dismiss()
                     Toast.makeText(context, "Hubo un problema en la consulta, por favor verifique su conexión a Internet e intente de nuevo", Toast.LENGTH_SHORT).show()
                 }
 
@@ -223,7 +221,7 @@ class ConsultaViajes : Fragment() {
                             val date = Date(it.request_time.split(".").get(0).toInt() * 1000L)
                             // format of the date
                             val jdf = SimpleDateFormat(formatoFecha)
-                            jdf.setTimeZone(TimeZone.getTimeZone("GMT-4"))
+                            jdf.timeZone = TimeZone.getTimeZone("GMT-4")
                             val hora = SimpleDateFormat(formatoHora)
                             hora.timeZone = TimeZone.getTimeZone("GMT-4")
 
@@ -257,8 +255,6 @@ class ConsultaViajes : Fragment() {
 
                     ListaViajes.adapter = AdaptadorPrincipal(bd!!.Select())
                     Graficos.visibility = View.VISIBLE
-                    progressDialog.dismiss()
-
                     Log.d("LOG:","FIN DE CICLO")
 
 
@@ -297,7 +293,7 @@ class ConsultaViajes : Fragment() {
             dialogo_show.cancel()
             (context as AppCompatActivity).supportFragmentManager
                     .beginTransaction()
-                    .add(R.id.Frame,GraficoTotal(),"GRAFICOS_TOTALES")
+                    .add(R.id.Frame, GraficoTotal(), "GRAFICOS_TOTALES")
                     .addToBackStack(null)
                     .commit()
         }
@@ -315,7 +311,7 @@ class ConsultaViajes : Fragment() {
             dialogo_show.cancel()
             (context as AppCompatActivity).supportFragmentManager
                     .beginTransaction()
-                    .add(R.id.Frame,GraficoTotalDriver(), "GRAFICO TOTAL DRIVER")
+                    .add(R.id.Frame, GraficoTotalDriver(), "GRAFICO TOTAL DRIVER")
                     .addToBackStack(null)
                     .commit()
         }
@@ -325,7 +321,7 @@ class ConsultaViajes : Fragment() {
             dialogo_show.cancel()
             (context as AppCompatActivity).supportFragmentManager
                     .beginTransaction()
-                    .add(R.id.Frame,GraficoDetalleRider(), "PRUEBA")
+                    .add(R.id.Frame, GraficoDetalleRider(), "PRUEBA")
                     .addToBackStack(null)
                     .commit()
         }
