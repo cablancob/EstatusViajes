@@ -86,8 +86,8 @@ class GraficoDetalle : Fragment() {
 
         var x = GraficoD.xAxis
         x.valueFormatter = IAxisValueFormatter { value, _ -> ArrayString.get(value.toInt()) }
-        x.labelRotationAngle = -45f
         x.labelCount = 3
+        x.textSize = letra - 2
         x.textColor = ContextCompat.getColor(view!!.context, R.color.GraficoTexto)
 
 
@@ -105,6 +105,9 @@ class GraficoDetalle : Fragment() {
         GraficoD.setPinchZoom(false)
 
         GraficoD.setBackgroundColor(ContextCompat.getColor(view!!.context, R.color.FondoGrafico))
+        GraficoD.extraTopOffset = 10f
+        GraficoD.extraLeftOffset = 10f
+        GraficoD.extraRightOffset = 10f
         GraficoD.invalidate()
 
 
