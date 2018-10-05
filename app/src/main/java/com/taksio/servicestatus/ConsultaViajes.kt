@@ -45,6 +45,7 @@ class ConsultaViajes : Fragment() {
 
         bd = ControladorBD(activity!!.applicationContext)
 
+
         val dateListener = object : DatePickerDialog.OnDateSetListener {
             override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
                 cal = Calendar.getInstance()
@@ -107,7 +108,7 @@ class ConsultaViajes : Fragment() {
                     bd!!.Drop()
                     bd!!.Create()
                     if (verifyAvailableNetwork((activity as MainActivity))) {
-                        fetchJson(fechaConsultaI, fechaConsultaF)
+                        fetchJson(fechaConsultaI, fechaConsultaF, AlertDialog.Builder(context))
                     } else {
                         Toast.makeText(context, "No hay conexion a internet, por favor validar", Toast.LENGTH_SHORT).show()
                     }
@@ -124,7 +125,7 @@ class ConsultaViajes : Fragment() {
         Calendario1!!.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View?) {
                 cal = Calendar.getInstance()
-                var Calendario = DatePickerDialog(v!!.context, dateListener, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH))
+                val Calendario = DatePickerDialog(v!!.context, dateListener, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH))
                 Calendario.datePicker.maxDate = System.currentTimeMillis()
                 Calendario.show()
             }
@@ -134,7 +135,7 @@ class ConsultaViajes : Fragment() {
         Calendario2!!.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View?) {
                 cal = Calendar.getInstance()
-                var Calendario = DatePickerDialog(v!!.context, dateListener2, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH))
+                val Calendario = DatePickerDialog(v!!.context, dateListener2, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH))
                 Calendario.datePicker.maxDate = System.currentTimeMillis()
                 Calendario.show()
 
@@ -148,7 +149,12 @@ class ConsultaViajes : Fragment() {
         ListaViajes.layoutManager = LinearLayoutManager(activity!!.applicationContext)
     }
 
-    fun fetchJson(fechaInicial: Long, fechaFinal: Long) {
+    fun fetchJson(fechaInicial: Long, fechaFinal: Long, dialogo: AlertDialog.Builder) {
+        dialogo.setView(layoutInflater.inflate(R.layout.layout_loading_dialog, null))
+        dialogo.setCancelable(false)
+        val dialogo_show = dialogo.show()
+
+
 
         Log.d("LOG:","COMIENZO DE CICLO")
 
@@ -191,7 +197,7 @@ class ConsultaViajes : Fragment() {
 
 
                 activity!!.runOnUiThread {
-                    var list: MutableList<Viajes>
+                    val list: MutableList<Viajes>
                     val listType = object : TypeToken<List<Viajes>>() {
 
                     }.type
@@ -256,6 +262,8 @@ class ConsultaViajes : Fragment() {
                     ListaViajes.adapter = AdaptadorPrincipal(bd!!.Select())
                     Graficos.visibility = View.VISIBLE
                     Log.d("LOG:","FIN DE CICLO")
+
+                    dialogo_show.cancel()
 
 
                 }
