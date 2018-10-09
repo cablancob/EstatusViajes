@@ -24,12 +24,12 @@ class GraficoTotal : Fragment() {
     override fun onStart() {
         super.onStart()
 
-        var bd = ControladorBD(context!!)
-        var letra = 14f
+        val bd = ControladorBD(context!!)
+        val letra = 14f
 
         var entries: MutableList<BarEntry>
         val colores = arrayOf(ContextCompat.getColor(view!!.context, R.color.NoAtendidoColor), ContextCompat.getColor(view!!.context, R.color.CompletadoColor))
-        var data_final: MutableList<IBarDataSet> = mutableListOf()
+        val data_final: MutableList<IBarDataSet> = mutableListOf()
 
 
         var contador = 0
@@ -37,14 +37,14 @@ class GraficoTotal : Fragment() {
             entries = mutableListOf()
             entries.add(BarEntry(contador.toFloat(), it.y.toFloat()))
             if (it.desc == "COMPLETADO") {
-                var DataSet = BarDataSet(entries, it.desc)
+                val DataSet = BarDataSet(entries, it.desc)
                 DataSet.valueTextSize = letra
                 DataSet.valueTextColor = ContextCompat.getColor(view!!.context, R.color.GraficoTexto)
                 DataSet.color = colores[1]
                 DataSet.valueFormatter = IValueFormatter { value, _, _, _ -> value.toInt().toString() }
                 data_final.add(DataSet)
             } else {
-                var DataSet = BarDataSet(entries, it.desc)
+                val DataSet = BarDataSet(entries, it.desc)
                 DataSet.valueTextSize = letra
                 DataSet.valueTextColor = ContextCompat.getColor(view!!.context, R.color.GraficoTexto)
                 DataSet.color = colores[0]
@@ -54,16 +54,12 @@ class GraficoTotal : Fragment() {
             contador += 1
         }
 
-        var x = GraficoT.xAxis
+        val x = GraficoT.xAxis
         x.labelCount = data_final.count()
         x.textColor = ContextCompat.getColor(view!!.context, R.color.GraficoTexto)
         x.textSize = letra
         x.isEnabled = false
 
-        GraficoT.axisRight.isEnabled = false
-
-        var y = GraficoT.axisLeft
-        y.granularity = 20f
 
         GraficoT.data = BarData(data_final)
         GraficoT.description.isEnabled = false
@@ -77,6 +73,10 @@ class GraficoTotal : Fragment() {
         GraficoT.axisLeft.textColor = ContextCompat.getColor(view!!.context, R.color.GraficoTexto)
 
         GraficoT.setBackgroundColor(ContextCompat.getColor(view!!.context, R.color.FondoGrafico))
+
+        GraficoT.axisLeft.axisMinimum = 0f
+        GraficoT.axisRight.axisMinimum = 0f
+
         GraficoT.invalidate()
     }
 }

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/FondoGrafico"
+    android:background="@color/Fondo"
     android:clickable="true"
     tools:context=".ConsultaViajes">
 
@@ -20,10 +20,10 @@
             android:id="@+id/ListaViajes"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
             android:fadeScrollbars="false"
             android:scrollbars="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -88,6 +88,7 @@
 
         <ImageView
             android:id="@+id/Calendario1"
+            android:contentDescription=""
             android:layout_width="31dp"
             android:layout_height="31dp"
             android:layout_marginStart="16dp"
@@ -114,6 +115,7 @@
 
         <ImageView
             android:id="@+id/Calendario2"
+            android:contentDescription=""
             android:layout_width="31dp"
             android:layout_height="31dp"
             android:layout_marginStart="16dp"

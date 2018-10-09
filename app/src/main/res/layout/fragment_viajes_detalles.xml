@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/FondoGrafico"
+    android:background="@color/Fondo"
     android:clickable="true"
     tools:context=".ViajesDetalles">
 
@@ -36,7 +36,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:text="AAAA-MM-DD"
-            android:textColor="@color/GraficoTexto"
+            android:textColor="@color/Titulos"
             android:textStyle="bold"
             android:textSize="24sp"
             app:layout_constraintEnd_toEndOf="parent"

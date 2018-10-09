@@ -5,20 +5,29 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 android {
-    project.archivesBaseName = "Services Status"
+    signingConfigs {
+        config {
+            keyAlias 'CarlosBlanco'
+            keyPassword '14519963'
+            storeFile file('/home/taksioweb-01/Carlos.jks')
+            storePassword '14519963'
+        }
+    }
+    project.archivesBaseName = "Services Register"
     compileSdkVersion 27
     defaultConfig {
         applicationId "com.taksio.servicestatus"
-        minSdkVersion 19
+        minSdkVersion 22
         targetSdkVersion 27
         versionCode 3
-        versionName '1.2.2'
+        versionName '1.2.3'
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
         }
     }
     productFlavors {
