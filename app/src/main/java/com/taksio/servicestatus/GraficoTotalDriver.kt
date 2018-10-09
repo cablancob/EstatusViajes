@@ -2,6 +2,7 @@ package com.taksio.servicestatus
 
 
 import Controlador.ControladorBD
+import android.app.AlertDialog
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
@@ -12,11 +13,13 @@ import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
-import com.github.mikephil.charting.formatter.IAxisValueFormatter
+import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.formatter.IValueFormatter
+import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import kotlinx.android.synthetic.main.fragment_grafico_total_driver.*
-
+import kotlinx.android.synthetic.main.layout_driver_datos.*
 
 
 class GraficoTotalDriver : Fragment() {
@@ -59,32 +62,53 @@ class GraficoTotalDriver : Fragment() {
         }
 
         val x = GraficoTD.xAxis
-        x.labelRotationAngle = -45f
+
         x.position = XAxis.XAxisPosition.BOTTOM
         x.labelCount = 3
         x.textSize = letra
-        x.valueFormatter = IAxisValueFormatter { value, _ -> Etiquetas.get(value.toInt()) }
         x.textColor = ContextCompat.getColor(view!!.context, R.color.GraficoTexto)
+        x.isEnabled = false
         x.setDrawGridLines(false)
 
 
         GraficoTD.data = BarData(data_final)
         GraficoTD.legend.isEnabled = false
-        GraficoTD.description.text = ""
+        GraficoTD.description.text = "PRESIONE UNA BARRA PARA VER MAS DETALLES"
+        GraficoTD.description.textSize = letra - 2
         GraficoTD.setVisibleXRangeMaximum(3.5f)
         GraficoTD.animateY(2000)
 
-        GraficoTD.axisLeft.axisMinimum = 0f
+        GraficoTD.axisLeft.axisMinimum = -1f
         GraficoTD.axisLeft.textColor = ContextCompat.getColor(view!!.context, R.color.GraficoTexto)
         GraficoTD.axisRight.textColor = ContextCompat.getColor(view!!.context, R.color.GraficoTexto)
-        GraficoTD.axisRight.axisMinimum = 0f
+        GraficoTD.axisRight.axisMinimum = -1f
 
         GraficoTD.extraBottomOffset = 24F
 
         GraficoTD.setBackgroundColor(ContextCompat.getColor(view!!.context, R.color.FondoGrafico))
 
         GraficoTD.setScaleEnabled(false)
-        GraficoTD.isClickable = false
+
+        GraficoTD.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
+            override fun onNothingSelected() {
+
+            }
+
+            override fun onValueSelected(e: Entry?, h: Highlight?) {
+                val dialogo = AlertDialog.Builder(context).setView(layoutInflater.inflate(R.layout.layout_driver_datos, null))
+
+                val dialogo_show = dialogo.show()
+
+                var foto = "http://45.55.20.17/taksio/public/docs/276/276_facephoto_.jpg"
+
+                /*  Glide.with(view!!).load(foto).apply(RequestOptions().circleCrop()).into(dialogo_show.datos_driver_foto)*/
+                dialogo_show.datos_driver.text = Etiquetas.get(h!!.dataSetIndex)
+                dialogo_show.datos_driver_cerrar.setOnClickListener {
+                    dialogo_show.cancel()
+                }
+            }
+
+        })
 
         GraficoTD.invalidate()
 
