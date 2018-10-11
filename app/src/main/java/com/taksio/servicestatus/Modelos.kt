@@ -35,7 +35,7 @@ class GraficoTotalR(val rider: String, val completados: String, val noatendidos:
 
 class GraficoTD(val driver: String, val y: String)
 
-class GraficoTDR(val rider: String, val desc: String, val y: String)
+class FotoDriver(val photo: String)
 
 
 

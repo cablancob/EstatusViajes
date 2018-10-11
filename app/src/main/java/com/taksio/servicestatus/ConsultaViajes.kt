@@ -101,10 +101,6 @@ class ConsultaViajes : Fragment() {
         Consultar.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View?) {
                 if (ValidarCampos()) {
-                    val dialogo = AlertDialog.Builder(view!!.context)
-                    dialogo.setView(layoutInflater.inflate(R.layout.layout_loading_dialog, null))
-                    dialogo.setCancelable(false)
-                    dialogo.create()
                     bd!!.Drop()
                     bd!!.Create()
                     if (verifyAvailableNetwork((activity as MainActivity))) {

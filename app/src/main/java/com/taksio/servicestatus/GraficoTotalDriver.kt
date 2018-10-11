@@ -9,6 +9,8 @@ import android.support.v4.content.ContextCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
@@ -18,11 +20,17 @@ import com.github.mikephil.charting.formatter.IValueFormatter
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
+import com.google.gson.GsonBuilder
 import kotlinx.android.synthetic.main.fragment_grafico_total_driver.*
 import kotlinx.android.synthetic.main.layout_driver_datos.*
+import okhttp3.*
+import java.io.IOException
 
 
 class GraficoTotalDriver : Fragment() {
+
+    var datos_bd: MutableList<GraficoTD> = mutableListOf()
+    val Etiquetas = ArrayList<String>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_grafico_total_driver, container, false)
@@ -36,13 +44,15 @@ class GraficoTotalDriver : Fragment() {
         val bd = ControladorBD(context!!)
         var entries: MutableList<BarEntry>
         val data_final: MutableList<IBarDataSet> = mutableListOf()
-        val Etiquetas = ArrayList<String>()
+
 
         var maximo = 0F
 
 
         var contador = 0
-        ControladorBD(context!!).GraficoTotalTD().forEach {
+        datos_bd = ControladorBD(context!!).GraficoTotalTD()
+
+        datos_bd.forEach {
             entries = mutableListOf()
             entries.add(BarEntry(contador.toFloat(), it.y.toFloat()))
 
@@ -95,22 +105,54 @@ class GraficoTotalDriver : Fragment() {
             }
 
             override fun onValueSelected(e: Entry?, h: Highlight?) {
-                val dialogo = AlertDialog.Builder(context).setView(layoutInflater.inflate(R.layout.layout_driver_datos, null))
-
-                val dialogo_show = dialogo.show()
-
-                var foto = "http://45.55.20.17/taksio/public/docs/276/276_facephoto_.jpg"
-
-                /*  Glide.with(view!!).load(foto).apply(RequestOptions().circleCrop()).into(dialogo_show.datos_driver_foto)*/
-                dialogo_show.datos_driver.text = Etiquetas.get(h!!.dataSetIndex)
-                dialogo_show.datos_driver_cerrar.setOnClickListener {
-                    dialogo_show.cancel()
-                }
+                CargarDatosDriver(h!!.dataSetIndex)
             }
 
         })
 
         GraficoTD.invalidate()
+
+    }
+
+    fun CargarDatosDriver(position: Int) {
+
+        var url = "http://driver.taksio.net/taksio/public/ws.php?uuid=${datos_bd.get(position).driver}"
+
+        val client = OkHttpClient()
+
+        client.newCall(Request.Builder()
+                .url(url)
+                .build()).enqueue(object : Callback {
+
+            override fun onFailure(call: Call?, e: IOException?) {
+                println("ERROR: ${e!!.message}")
+            }
+
+            override fun onResponse(call: Call?, response: Response?) {
+                (activity as MainActivity).runOnUiThread {
+                    var list = GsonBuilder().create().fromJson(response?.body()?.string(), FotoDriver::class.java)
+
+                    val dialogo_datos = AlertDialog.Builder(context).setView(layoutInflater.inflate(R.layout.layout_driver_datos, null))
+
+                    val dialogo_datos_show = dialogo_datos.show()
+
+                    Glide.with(view!!)
+                            .load(list.photo)
+                            .thumbnail(Glide.with(view!!).load(R.raw.loading))
+                            .apply(RequestOptions().circleCrop())
+                            .apply(RequestOptions().override(200, 200))
+                            .into(dialogo_datos_show.datos_driver_foto)
+
+                    dialogo_datos_show.datos_driver.text = Etiquetas.get(position)
+                    dialogo_datos_show.datos_driver_cerrar.setOnClickListener {
+                        dialogo_datos_show.cancel()
+                    }
+
+
+                }
+            }
+        })
+
 
     }
 
