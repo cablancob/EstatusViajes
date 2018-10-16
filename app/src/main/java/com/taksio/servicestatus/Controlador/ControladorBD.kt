@@ -41,6 +41,14 @@ class ControladorBD(context: Context) : SQLiteOpenHelper(context, NOMBRE_BD, nul
         valores.put(Tablas.Personas.COLUMNA_ORIGIN, viajes.features.origin)
         valores.put(Tablas.Personas.COLUMNA_DESTINO, viajes.features.destination)
         valores.put(Tablas.Personas.COLUMNA_TKS, viajes.billing.fare.amount)
+        valores.put(Tablas.Personas.COLUMNA_SUPPLY_ACCEPT_TIME, viajes.supply_accept_time)
+        valores.put(Tablas.Personas.COLUMNA_CANCEL_REASON, viajes.cancel_reason)
+        valores.put(Tablas.Personas.COLUMNA_USER_CANCEL, viajes.user_cancel)
+        valores.put(Tablas.Personas.COLUMNA_SUPPLY_ARRIVE_TIME, viajes.supply_arrive_time)
+        valores.put(Tablas.Personas.COLUMNA_SUPPLY_ARRIVE_LOCATION, viajes.supply_arrive_location)
+        valores.put(Tablas.Personas.COLUMNA_SUPPLY_ACCEPT_LOCATION, viajes.supply_accept_location)
+        valores.put(Tablas.Personas.COLUMNA_SUPPLY_CANCEL_LOCATION, viajes.supply_cancel_location)
+        valores.put(Tablas.Personas.COLUMNA_CANCEL_TIME, viajes.cancel_time)
         bd.insert(Tablas.Personas.NOMBRE_TABLA, null, valores)
     }
 
@@ -62,7 +70,15 @@ class ControladorBD(context: Context) : SQLiteOpenHelper(context, NOMBRE_BD, nul
                 "${Tablas.Personas.COLUMNA_SUPPLY} TEXT NULL DEFAULT '-'," +
                 "${Tablas.Personas.COLUMNA_ORIGIN} TEXT NULL DEFAULT '-'," +
                 "${Tablas.Personas.COLUMNA_DESTINO} TEXT NULL DEFAULT '-'," +
-                "${Tablas.Personas.COLUMNA_TKS} TEXT NULL DEFAULT '0'" +
+                "${Tablas.Personas.COLUMNA_TKS} TEXT NULL DEFAULT '0'," +
+                "${Tablas.Personas.COLUMNA_SUPPLY_ACCEPT_TIME} TEXT NULL," +
+                "${Tablas.Personas.COLUMNA_CANCEL_REASON} TEXT NULL," +
+                "${Tablas.Personas.COLUMNA_USER_CANCEL} TEXT NULL," +
+                "${Tablas.Personas.COLUMNA_SUPPLY_ARRIVE_TIME} TEXT NULL," +
+                "${Tablas.Personas.COLUMNA_SUPPLY_ARRIVE_LOCATION} TEXT NULL," +
+                "${Tablas.Personas.COLUMNA_SUPPLY_ACCEPT_LOCATION} TEXT NULL," +
+                "${Tablas.Personas.COLUMNA_SUPPLY_CANCEL_LOCATION} TEXT NULL," +
+                "${Tablas.Personas.COLUMNA_CANCEL_TIME} TEXT NULL" +
                 ")")
 
         bd.execSQL("CREATE TABLE IF NOT EXISTS ${Tablas.Usuarios.NOMBRE_TABLA} " +
@@ -83,7 +99,8 @@ class ControladorBD(context: Context) : SQLiteOpenHelper(context, NOMBRE_BD, nul
                 "SELECT " +
                         "A.${Tablas.Personas.COLUMNA_FECHA}, " +
                         "IFNULL(B.C,'0'), " +
-                        "IFNULL(C.N,'0') " +
+                        "IFNULL(C.N,'0'), " +
+                        "IFNULL(D.CA, '0') " +
                         "FROM " +
                         "(SELECT ${Tablas.Personas.COLUMNA_FECHA} " +
                         "FROM " +
@@ -101,12 +118,18 @@ class ControladorBD(context: Context) : SQLiteOpenHelper(context, NOMBRE_BD, nul
                         "WHERE ${Tablas.Personas.COLUMNA_DESC} == 'REQUEST_TIMEOUT' " +
                         "GROUP BY ${Tablas.Personas.COLUMNA_FECHA}) C " +
                         "ON A.${Tablas.Personas.COLUMNA_FECHA} == C.${Tablas.Personas.COLUMNA_FECHA} " +
+                        "LEFT OUTER JOIN " +
+                        "(SELECT ${Tablas.Personas.COLUMNA_FECHA}, COUNT(*) AS CA " +
+                        "FROM ${Tablas.Personas.NOMBRE_TABLA} " +
+                        "WHERE ${Tablas.Personas.COLUMNA_DESC} == 'TRIP_CANCELLED' " +
+                        "GROUP BY ${Tablas.Personas.COLUMNA_FECHA}) D " +
+                        "ON A.${Tablas.Personas.COLUMNA_FECHA} == D.${Tablas.Personas.COLUMNA_FECHA} " +
                         "ORDER BY A.${Tablas.Personas.COLUMNA_FECHA} DESC", null)
         if (cursor != null) {
             if (cursor.count > 0) {
                 cursor.moveToFirst()
                 do {
-                    lista.add(ViajesContados(cursor.getString(0), cursor.getString(1), cursor.getString(2)))
+                    lista.add(ViajesContados(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3)))
                 } while (cursor.moveToNext())
             }
         }
@@ -150,7 +173,16 @@ class ControladorBD(context: Context) : SQLiteOpenHelper(context, NOMBRE_BD, nul
                         "${Tablas.Personas.COLUMNA_HORA}, " +
                         "${Tablas.Personas.COLUMNA_ORIGIN}, " +
                         "${Tablas.Personas.COLUMNA_DESTINO}, " +
-                        "${Tablas.Personas.COLUMNA_TKS} " +
+                        "${Tablas.Personas.COLUMNA_TKS}, " +
+                        "${Tablas.Personas.COLUMNA_SUPPLY_ACCEPT_TIME}, " +
+                        "${Tablas.Personas.COLUMNA_CANCEL_REASON}, " +
+                        "${Tablas.Personas.COLUMNA_USER_CANCEL}, " +
+                        "${Tablas.Personas.COLUMNA_SUPPLY_ARRIVE_TIME}, " +
+                        "${Tablas.Personas.COLUMNA_SUPPLY_ARRIVE_LOCATION}, " +
+                        "${Tablas.Personas.COLUMNA_SUPPLY_ACCEPT_LOCATION}, " +
+                        "${Tablas.Personas.COLUMNA_SUPPLY_CANCEL_LOCATION}, " +
+                        "${Tablas.Personas.COLUMNA_CANCEL_TIME}, " +
+                        "${Tablas.Personas.COLUMNA_DESC} " +
                         "FROM ${Tablas.Personas.NOMBRE_TABLA} " +
                         "WHERE ${Tablas.Personas.COLUMNA_FECHA} == '${fecha.trim()}' " +
                         "AND ${Tablas.Personas.COLUMNA_DEMAND} == '${rider.trim()}' " +
@@ -163,7 +195,7 @@ class ControladorBD(context: Context) : SQLiteOpenHelper(context, NOMBRE_BD, nul
                 do {
 
                     lista.add(ViajeRiderDetalle(cursor.getString(0),
-                            cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4)))
+                            cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5), cursor.getString(6), cursor.getString(7), cursor.getString(8), cursor.getString(9), cursor.getString(10), cursor.getString(11), cursor.getString(12), cursor.getString(13)))
                 } while (cursor.moveToNext())
             }
         }

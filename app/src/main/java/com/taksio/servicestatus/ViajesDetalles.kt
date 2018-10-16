@@ -35,7 +35,7 @@ class ViajesDetalles : Fragment() {
 }
 
 
-class DetalleAdaptador(val viajes: MutableList<ViajeDetalle>) : RecyclerView.Adapter<DetalleViewHolder>() {
+class DetalleAdaptador(val viajes: MutableList<ViajeDetalle>) : RecyclerView.Adapter<DetalleAdaptador.DetalleViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DetalleViewHolder {
         return DetalleViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.detalleviaje, parent, false))
     }
@@ -58,14 +58,16 @@ class DetalleAdaptador(val viajes: MutableList<ViajeDetalle>) : RecyclerView.Ada
         if (viaje.estatus.trim() == "TRIP_ENDED") {
             holder.view.contenidoStatus.setTextColor(ContextCompat.getColor(holder.view.context, R.color.CompletadoColor))
             holder.view.contenidoStatus.text = (holder.view.context as AppCompatActivity).resources.getString(R.string.Completado)
-        } else {
+        } else if (viaje.estatus.trim() == "REQUEST_TIMEOUT") {
             holder.view.contenidoStatus.setTextColor(ContextCompat.getColor(holder.view.context, R.color.NoAtendidoColor))
             holder.view.contenidoStatus.text = (holder.view.context as AppCompatActivity).resources.getString(R.string.NoAtendido)
+        } else {
+            holder.view.contenidoStatus.setTextColor(ContextCompat.getColor(holder.view.context, R.color.CanceladosColor))
+            holder.view.contenidoStatus.text = (holder.view.context as AppCompatActivity).resources.getString(R.string.Cancelados)
+
         }
 
         holder.viajes = viaje
-
-    }
 
 
 
@@ -88,4 +90,5 @@ class DetalleViewHolder(val view: View, var viajes: ViajeDetalle? = null) : Recy
                     .commit()
         }
     }
+}
 }

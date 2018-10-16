@@ -35,9 +35,12 @@ class DetalleViaje : Fragment() {
         if (viaje.estatus == "TRIP_ENDED") {
             detalleContenidoStatus.text = (view!!.context as AppCompatActivity).getString(R.string.Completado)
             detalleContenidoStatus.setTextColor(ContextCompat.getColor(view!!.context, R.color.CompletadoColor))
-        } else {
+        } else if (viaje.estatus.trim() == "REQUEST_TIMEOUT") {
             detalleContenidoStatus.text = (view!!.context as AppCompatActivity).getString(R.string.NoAtendido)
             detalleContenidoStatus.setTextColor(ContextCompat.getColor(view!!.context, R.color.NoAtendidoColor))
+        } else {
+            detalleContenidoStatus.text = (view!!.context as AppCompatActivity).getString(R.string.Cancelados)
+            detalleContenidoStatus.setTextColor(ContextCompat.getColor(view!!.context, R.color.CanceladosColor))
         }
 
         detalleRecycler.layoutManager = LinearLayoutManager(activity!!.applicationContext)
@@ -62,17 +65,13 @@ class RiderAdaptador(val viaje: MutableList<ViajeRiderDetalle>) : RecyclerView.A
         val dato = viaje.get(position)
         var bd = ControladorBD(holder.view.context)
 
+        holder.view.cancelLT.visibility = View.GONE
+        holder.view.aceptLT.visibility = View.GONE
+        holder.view.llegoLT.visibility = View.GONE
 
 
-        if (dato.supply == "-") {
-            holder.view.driverC.visibility = View.GONE
-            holder.view.driverT.visibility = View.GONE
-            holder.view.telefonoC.visibility = View.GONE
-            holder.view.telefonoT.visibility = View.GONE
-            holder.view.tksC.visibility = View.GONE
-            holder.view.tksT.visibility = View.GONE
-        }
-        if (dato.supply != "-") {
+        if (dato.estatus == "TRIP_ENDED") {
+            ocultar_cancelados(holder)
             var datos = bd.UsuarioDatos(dato.supply)
             holder.view.driverC.text = datos.name
             holder.view.telefonoC.text = datos.phone
@@ -80,11 +79,81 @@ class RiderAdaptador(val viaje: MutableList<ViajeRiderDetalle>) : RecyclerView.A
             holder.view.ridercontenidoOrigen.text = dato.origen
             holder.view.ridercontenidoDestino.text = dato.destino
             holder.view.tksC.text = "${dato.tks} TKS"
-        } else {
+
+        }
+
+        if (dato.estatus == "REQUEST_TIMEOUT") {
+            ocultar_cancelados(holder)
+            holder.view.driverC.visibility = View.GONE
+            holder.view.driverT.visibility = View.GONE
+            holder.view.telefonoC.visibility = View.GONE
+            holder.view.telefonoT.visibility = View.GONE
+            holder.view.tksC.visibility = View.GONE
+            holder.view.tksT.visibility = View.GONE
+
             holder.view.riderHora.text = dato.hora
             holder.view.ridercontenidoOrigen.text = dato.origen
             holder.view.ridercontenidoDestino.text = dato.destino
         }
+
+        if (dato.estatus == "TRIP_CANCELLED") {
+            var datos = bd.UsuarioDatos(dato.supply)
+            holder.view.driverC.text = datos.name
+            holder.view.telefonoC.text = datos.phone
+            holder.view.riderHora.text = dato.hora
+            holder.view.ridercontenidoOrigen.text = dato.origen
+            holder.view.ridercontenidoDestino.text = dato.destino
+            holder.view.tksC.text = "${dato.tks} TKS"
+
+            holder.view.cancelH.text = dato.cancel_time
+
+            holder.view.cancelU.text = bd.UsuarioDatos(dato.user_cancel!!.split(":").get(1)).name
+
+            if (dato.cancel_reason == "CANCEL_TIMEOUT") {
+                holder.view.cancelR.text = (holder.view.context as AppCompatActivity).resources.getString(R.string.CANCEL_TIMEOUT)
+            }
+            if (dato.cancel_reason == "CANCEL_MISMATCH_PAYLOAD") {
+                holder.view.cancelR.text = (holder.view.context as AppCompatActivity).resources.getString(R.string.CANCEL_MISMATCH_PAYLOAD)
+            }
+            if (dato.cancel_reason == "CANCEL_MISMATCH_ID") {
+                holder.view.cancelR.text = (holder.view.context as AppCompatActivity).resources.getString(R.string.CANCEL_MISMATCH_ID)
+            }
+            if (dato.cancel_reason == "CANCEL_OTHER") {
+                holder.view.cancelR.text = (holder.view.context as AppCompatActivity).resources.getString(R.string.CANCEL_OTHER)
+            }
+
+
+            holder.view.aceptH.text = dato.supply_accept_time
+
+            if (dato.supply_arrive_location != null) {
+                holder.view.aceptH.text = dato.supply_arrive_time
+            } else {
+                holder.view.llegoT.visibility = View.GONE
+                holder.view.llegoH.visibility = View.GONE
+                holder.view.llegoHT.visibility = View.GONE
+                holder.view.llegoLT.visibility = View.GONE
+            }
+
+        }
+    }
+
+    fun ocultar_cancelados(holder: RiderViewHolder) {
+        holder.view.tituloCancelacion.visibility = View.GONE
+        holder.view.cancelUT.visibility = View.GONE
+        holder.view.cancelU.visibility = View.GONE
+        holder.view.cancelHT.visibility = View.GONE
+        holder.view.cancelH.visibility = View.GONE
+        holder.view.cancelRT.visibility = View.GONE
+        holder.view.cancelR.visibility = View.GONE
+        holder.view.cancelLT.visibility = View.GONE
+        holder.view.aceptT.visibility = View.GONE
+        holder.view.aceptHT.visibility = View.GONE
+        holder.view.aceptH.visibility = View.GONE
+        holder.view.aceptLT.visibility = View.GONE
+        holder.view.llegoT.visibility = View.GONE
+        holder.view.llegoHT.visibility = View.GONE
+        holder.view.llegoH.visibility = View.GONE
+        holder.view.llegoLT.visibility = View.GONE
     }
 }
 

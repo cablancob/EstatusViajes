@@ -8,6 +8,7 @@
     <color name="GraficoTexto">#000000</color>
     <color name="CompletadoColor">#348679</color>
     <color name="NoAtendidoColor">#f57c00</color>
+    <color name="CanceladosColor">#d50000</color>
     <color name="Titulos">#000000</color>
     <color name="Contenido">@android:color/darker_gray</color>
     <color name="Fondo">#FFFFFF</color>

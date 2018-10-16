@@ -44,7 +44,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        android:text="TRIP_ENDED"
+        android:text="@string/Completado"
+        android:textColor="@color/CompletadoColor"
         app:layout_constraintStart_toEndOf="@+id/EstatusTitulo"
         app:layout_constraintTop_toBottomOf="@+id/Fecha" />
 
@@ -89,7 +90,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        android:text="TRIP_ENDED"
+        android:text="@string/NoAtendido"
+        android:textColor="@color/NoAtendidoColor"
         app:layout_constraintStart_toEndOf="@+id/EstatusT"
         app:layout_constraintTop_toBottomOf="@+id/Cantidad" />
 
@@ -116,6 +118,52 @@
         app:layout_constraintTop_toBottomOf="@+id/EstatusT" />
 
 
+    <TextView
+        android:id="@+id/EstatusTCA"
+        style="@style/Titulos"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Estatus: "
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/CantidadT" />
+
+    <TextView
+        android:id="@+id/EstatusCCA"
+        style="@style/Contenido"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/Cancelados"
+        android:textColor="@color/CanceladosColor"
+        app:layout_constraintStart_toEndOf="@+id/EstatusT"
+        app:layout_constraintTop_toBottomOf="@+id/CantidadT" />
+
+    <TextView
+        android:id="@+id/CantidadTCA"
+        style="@style/Titulos"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Cantidad:"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/EstatusTCA" />
+
+    <TextView
+        android:id="@+id/CantidadCCA"
+        style="@style/Contenido"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="8dp"
+        android:text="0"
+        app:layout_constraintStart_toEndOf="@+id/CantidadTCA"
+        app:layout_constraintTop_toBottomOf="@+id/EstatusTCA" />
+
+
     <View
         android:id="@+id/LineaNegra"
         android:layout_width="0dp"
@@ -125,5 +173,5 @@
         android:text="TextView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/CantidadT" />
+        app:layout_constraintTop_toBottomOf="@+id/CantidadCCA" />
 </android.support.constraint.ConstraintLayout>

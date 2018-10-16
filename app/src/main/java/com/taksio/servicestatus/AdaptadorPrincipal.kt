@@ -1,7 +1,6 @@
 package com.taksio.servicestatus
 
 import android.os.Bundle
-import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -25,13 +24,7 @@ class AdaptadorPrincipal(val viajesContados: MutableList<ViajesContados>) : Recy
         holder.view.Fecha.text = viajesContados.request_time
         holder.view.Cantidad.text = viajesContados.completados
         holder.view.CantidadC.text = viajesContados.noatendidos
-        holder.view.Estatus.setTextColor(ContextCompat.getColor(holder.view.context, R.color.CompletadoColor))
-        holder.view.EstatusC.setTextColor(ContextCompat.getColor(holder.view.context, R.color.NoAtendidoColor))
-        holder.view.Estatus.text = (holder.view.context as AppCompatActivity).getString(R.string.Completado)
-
-        holder.view.EstatusC.text = (holder.view.context as AppCompatActivity).getString(R.string.NoAtendido)
-
-
+        holder.view.CantidadCCA.text = viajesContados.cancelados
 
         holder.viajesContados = viajesContados
 

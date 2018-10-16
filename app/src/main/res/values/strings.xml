@@ -2,4 +2,10 @@
     <string name="app_name">Registros de Servicios</string>
     <string name="Completado">COMPLETADO</string>
     <string name="NoAtendido">NO ATENDIDO</string>
+    <string name="Cancelados">CANCELADO</string>
+    <string name="CANCEL_TIMEOUT">Tiempo de espera</string>
+    <string name="CANCEL_MISMATCH_PAYLOAD">Excedido de Maletas</string>
+    <string name="CANCEL_MISMATCH_ID">No concuerda el perfil</string>
+    <string name="CANCEL_OTHER">Otros</string>
+
 </resources>

@@ -216,16 +216,16 @@ class ConsultaViajes : Fragment() {
 
                     list = GsonBuilder().create().fromJson(response?.body()?.string(), listType)
 
-
+                    val jdf = SimpleDateFormat(formatoFecha)
+                    jdf.timeZone = TimeZone.getTimeZone("GMT-4")
+                    val hora = SimpleDateFormat(formatoHora)
+                    hora.timeZone = TimeZone.getTimeZone("GMT-4")
 
                     list.forEach {
                         if (it.desc.trim() != "TRIP_CANCELLED") {
                             val date = Date(it.request_time.split(".").get(0).toInt() * 1000L)
                             // format of the date
-                            val jdf = SimpleDateFormat(formatoFecha)
-                            jdf.timeZone = TimeZone.getTimeZone("GMT-4")
-                            val hora = SimpleDateFormat(formatoHora)
-                            hora.timeZone = TimeZone.getTimeZone("GMT-4")
+
 
 
 
@@ -244,10 +244,91 @@ class ConsultaViajes : Fragment() {
                                                 },
                                                 hora.format(date).toString().trim(),
                                                 features(it.features.origin, it.features.destination),
-                                                billing(fare(it.billing.fare.amount))
+                                                billing(fare(it.billing.fare.amount)),
+                                                when {
+                                                    it.supply_accept_time == null -> {
+                                                        "-"
+                                                    }
+                                                    else -> {
+                                                        hora.format(Date(it.supply_accept_time.split(".").get(0).toInt() * 1000L)).toString().trim()
+                                                    }
+                                                },
+                                                it.cancel_reason,
+                                                it.user_cancel,
+                                                when {
+                                                    it.supply_arrive_time == null -> {
+                                                        "-"
+                                                    }
+                                                    else -> {
+                                                        hora.format(Date(it.supply_arrive_time.split(".").get(0).toInt() * 1000L)).toString().trim()
+                                                    }
+                                                },
+                                                it.supply_arrive_location,
+                                                it.supply_accept_location,
+                                                it.supply_cancel_location,
+                                                when {
+                                                    it.cancel_time == null -> {
+                                                        "-"
+                                                    }
+                                                    else -> {
+                                                        hora.format(Date(it.cancel_time.split(".").get(0).toInt() * 1000L)).toString().trim()
+                                                    }
+                                                }
                                         )
                                 )
 
+                        } else {
+                            var cancelado = it
+                            if (cancelado.supply_accept_location != null) {
+                                val date = Date(it.request_time.split(".").get(0).toInt() * 1000L)
+                                bd!!.Insert(
+                                        Viajes(it.desc.trim(),
+                                                jdf.format(date).trim(),
+                                                it.demand.split(":")[1].trim(),
+                                                when {
+                                                    it.supply == null -> {
+                                                        "-"
+                                                    }
+                                                    else -> {
+                                                        it.supply.split(":")[1].trim()
+                                                    }
+
+                                                },
+                                                hora.format(date).toString().trim(),
+                                                features(it.features.origin, it.features.destination),
+                                                billing(fare(it.billing.fare.amount)),
+                                                when {
+                                                    it.supply_accept_time == null -> {
+                                                        "-"
+                                                    }
+                                                    else -> {
+                                                        hora.format(Date(it.supply_accept_time.split(".").get(0).toInt() * 1000L)).toString().trim()
+                                                    }
+                                                },
+                                                it.cancel_reason,
+                                                it.user_cancel,
+                                                when {
+                                                    it.supply_arrive_time == null -> {
+                                                        "-"
+                                                    }
+                                                    else -> {
+                                                        hora.format(Date(it.supply_arrive_time.split(".").get(0).toInt() * 1000L)).toString().trim()
+                                                    }
+                                                },
+                                                it.supply_arrive_location,
+                                                it.supply_accept_location,
+                                                it.supply_cancel_location,
+                                                when {
+                                                    it.cancel_time == null -> {
+                                                        "-"
+                                                    }
+                                                    else -> {
+                                                        hora.format(Date(it.cancel_time.split(".").get(0).toInt() * 1000L)).toString().trim()
+                                                    }
+                                                }
+                                        )
+                                )
+                            }
 
                         }
                     }
