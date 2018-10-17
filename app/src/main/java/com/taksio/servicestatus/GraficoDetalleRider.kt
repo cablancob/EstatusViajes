@@ -30,6 +30,7 @@ class GraficoDetalleRider : Fragment() {
 
         var entries: MutableList<BarEntry> = mutableListOf()
         var entries2: MutableList<BarEntry> = mutableListOf()
+        var entries3: MutableList<BarEntry> = mutableListOf()
         var Etiquetas = ArrayList<String>()
 
         var bd = ControladorBD(context!!)
@@ -39,6 +40,8 @@ class GraficoDetalleRider : Fragment() {
             entries.add(BarEntry(contador.toFloat(), it.completados.toFloat()))
 
             entries2.add(BarEntry(contador.toFloat(), it.noatendidos.toFloat()))
+
+            entries3.add(BarEntry(contador.toFloat(), it.cancelados.toFloat()))
 
             Etiquetas.add(bd.UsuarioDatos(it.rider).name)
 
@@ -52,11 +55,18 @@ class GraficoDetalleRider : Fragment() {
         DataSet.color = ContextCompat.getColor(context!!, R.color.CompletadoColor)
         DataSet.valueTextColor = ContextCompat.getColor(view!!.context, R.color.GraficoTexto)
         DataSet.valueFormatter = IValueFormatter { value, _, _, _ -> value.toInt().toString() }
+
         var DataSet1 = BarDataSet(entries2, getString(R.string.NoAtendido))
         DataSet1.color = ContextCompat.getColor(context!!, R.color.NoAtendidoColor)
         DataSet1.valueFormatter = IValueFormatter { value, _, _, _ -> value.toInt().toString() }
         DataSet1.valueTextColor = ContextCompat.getColor(view!!.context, R.color.GraficoTexto)
         DataSet1.valueTextSize = letra
+
+        var DataSet2 = BarDataSet(entries3, getString(R.string.Cancelados))
+        DataSet2.color = ContextCompat.getColor(context!!, R.color.CanceladosColor)
+        DataSet2.valueFormatter = IValueFormatter { value, _, _, _ -> value.toInt().toString() }
+        DataSet2.valueTextColor = ContextCompat.getColor(view!!.context, R.color.GraficoTexto)
+        DataSet2.valueTextSize = letra
 
         var x = GraficoTDRider.xAxis
         x.granularity = 1f
@@ -67,8 +77,8 @@ class GraficoDetalleRider : Fragment() {
         x.valueFormatter = IndexAxisValueFormatter(Etiquetas)
         x.setCenterAxisLabels(true)
 
-        var data = BarData(DataSet, DataSet1)
-        data.barWidth = 0.45f
+        var data = BarData(DataSet, DataSet1, DataSet2)
+        data.barWidth = 0.30f
         GraficoTDRider.data = data
         GraficoTDRider.description.text = "DESPLAZAR A LA DERECHA PARA VER MAS RIDERS"
         GraficoTDRider.description.textColor = ContextCompat.getColor(context!!, R.color.GraficoTexto)
@@ -76,7 +86,7 @@ class GraficoDetalleRider : Fragment() {
         GraficoTDRider.legend.textSize = letra
         GraficoTDRider.legend.textColor = ContextCompat.getColor(context!!, R.color.GraficoTexto)
         GraficoTDRider.setPinchZoom(false)
-        GraficoTDRider.groupBars(0f,0.06f,0.02f)
+        GraficoTDRider.groupBars(0f, 0.04f, 0.02f)
         GraficoTDRider.setVisibleXRangeMaximum(2f)
         GraficoTDRider.animateXY(2000,2000)
 

@@ -336,13 +336,19 @@ class ControladorBD(context: Context) : SQLiteOpenHelper(context, NOMBRE_BD, nul
 
         cursor = bd.rawQuery(
                 "SELECT CASE " +
-                        "WHEN ${Tablas.Personas.COLUMNA_DESC} == 'TRIP_ENDED' THEN" +
-                        "'COMPLETADO' ELSE " +
-                        "'NO ATENDIDO' END, " +
+                        "WHEN ${Tablas.Personas.COLUMNA_DESC} == 'TRIP_ENDED' THEN 'COMPLETADO' " +
+                        "WHEN ${Tablas.Personas.COLUMNA_DESC} == 'REQUEST_TIMEOUT' THEN 'NO ATENDIDO' " +
+                        "WHEN ${Tablas.Personas.COLUMNA_DESC} == 'TRIP_CANCELLED' THEN 'CANCELADO' " +
+                        "END, " +
                         "COUNT(*) " +
                         "FROM ${Tablas.Personas.NOMBRE_TABLA} " +
                         "GROUP BY ${Tablas.Personas.COLUMNA_DESC} " +
-                        "ORDER BY ${Tablas.Personas.COLUMNA_DESC} DESC", null
+                        "ORDER BY CASE " +
+                        "WHEN ${Tablas.Personas.COLUMNA_DESC} LIKE 'TRIP_ENDED' THEN 1 " +
+                        "WHEN ${Tablas.Personas.COLUMNA_DESC} LIKE 'REQUEST_TIMEOUT' THEN 2 " +
+                        "WHEN ${Tablas.Personas.COLUMNA_DESC} LIKE 'TRIP_CANCELLED' THEN 3 " +
+                        "END"
+                , null
         )
 
         if (cursor != null) {
@@ -421,6 +427,37 @@ class ControladorBD(context: Context) : SQLiteOpenHelper(context, NOMBRE_BD, nul
         return datos
     }
 
+    fun GraficoTotalDetalleCCancelado(): MutableList<GraficoTotalD> {
+        var datos: MutableList<GraficoTotalD> = mutableListOf()
+        val cursor: Cursor
+
+        cursor = bd.rawQuery(
+                "SELECT A.${Tablas.Personas.COLUMNA_FECHA}, " +
+                        "IFNULL(B.C,'0') " +
+                        "FROM " +
+                        "(SELECT ${Tablas.Personas.COLUMNA_FECHA} " +
+                        "FROM ${Tablas.Personas.NOMBRE_TABLA} " +
+                        "GROUP BY ${Tablas.Personas.COLUMNA_FECHA}) A " +
+                        "LEFT OUTER JOIN " +
+                        "(SELECT ${Tablas.Personas.COLUMNA_FECHA}, " +
+                        "COUNT(*) AS C " +
+                        "FROM ${Tablas.Personas.NOMBRE_TABLA} " +
+                        "WHERE ${Tablas.Personas.COLUMNA_DESC} == 'TRIP_CANCELLED' " +
+                        "GROUP BY ${Tablas.Personas.COLUMNA_FECHA}) B " +
+                        "ON A.${Tablas.Personas.COLUMNA_FECHA} == B.${Tablas.Personas.COLUMNA_FECHA}", null)
+
+        if (cursor != null) {
+            if (cursor.count > 0) {
+                cursor.moveToFirst()
+                do {
+                    datos.add(GraficoTotalD(cursor.getString(0), "NO ATENDIDO", cursor.getString(1)))
+                } while (cursor.moveToNext())
+            }
+        }
+
+        return datos
+    }
+
 
     fun GraficoTotalTD(): MutableList<GraficoTD> {
         var datos: MutableList<GraficoTD> = mutableListOf()
@@ -456,7 +493,8 @@ class ControladorBD(context: Context) : SQLiteOpenHelper(context, NOMBRE_BD, nul
         cursor = bd.rawQuery("SELECT " +
                 "A.${Tablas.Personas.COLUMNA_DEMAND}, " +
                 "IFNULL(B.C,'0'), " +
-                "IFNULL(C.N,'0') " +
+                "IFNULL(C.N,'0'), " +
+                "IFNULL(D.CA,'0') " +
                 "FROM " +
                 "(SELECT ${Tablas.Personas.COLUMNA_DEMAND} " +
                 "FROM ${Tablas.Personas.NOMBRE_TABLA} " +
@@ -474,6 +512,13 @@ class ControladorBD(context: Context) : SQLiteOpenHelper(context, NOMBRE_BD, nul
                 "AND ${Tablas.Personas.COLUMNA_DEMAND} != '-' " +
                 "GROUP BY ${Tablas.Personas.COLUMNA_DEMAND}) C " +
                 "ON A.${Tablas.Personas.COLUMNA_DEMAND} == C.${Tablas.Personas.COLUMNA_DEMAND} " +
+                "LEFT OUTER JOIN " +
+                "(SELECT ${Tablas.Personas.COLUMNA_DEMAND}, COUNT(*) as CA " +
+                "FROM ${Tablas.Personas.NOMBRE_TABLA} " +
+                "WHERE ${Tablas.Personas.COLUMNA_DESC} == 'TRIP_CANCELLED' " +
+                "AND ${Tablas.Personas.COLUMNA_DEMAND} != '-' " +
+                "GROUP BY ${Tablas.Personas.COLUMNA_DEMAND}) D " +
+                "ON A.${Tablas.Personas.COLUMNA_DEMAND} == D.${Tablas.Personas.COLUMNA_DEMAND} " +
                 "ORDER BY B.C DESC, C.N DESC "
                 , null)
 
@@ -481,7 +526,7 @@ class ControladorBD(context: Context) : SQLiteOpenHelper(context, NOMBRE_BD, nul
             if (cursor.count > 0) {
                 cursor.moveToFirst()
                 do {
-                    datos.add(GraficoTotalR(cursor.getString(0), cursor.getString(1), cursor.getString(2)))
+                    datos.add(GraficoTotalR(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3)))
                 } while (cursor.moveToNext())
             }
         }

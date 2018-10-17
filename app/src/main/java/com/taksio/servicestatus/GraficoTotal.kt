@@ -28,7 +28,7 @@ class GraficoTotal : Fragment() {
         val letra = 14f
 
         var entries: MutableList<BarEntry>
-        val colores = arrayOf(ContextCompat.getColor(view!!.context, R.color.NoAtendidoColor), ContextCompat.getColor(view!!.context, R.color.CompletadoColor))
+        val colores = arrayOf(ContextCompat.getColor(view!!.context, R.color.NoAtendidoColor), ContextCompat.getColor(view!!.context, R.color.CompletadoColor), ContextCompat.getColor(view!!.context, R.color.CanceladosColor))
         val data_final: MutableList<IBarDataSet> = mutableListOf()
 
 
@@ -43,11 +43,18 @@ class GraficoTotal : Fragment() {
                 DataSet.color = colores[1]
                 DataSet.valueFormatter = IValueFormatter { value, _, _, _ -> value.toInt().toString() }
                 data_final.add(DataSet)
-            } else {
+            } else if (it.desc == "NO ATENDIDO") {
                 val DataSet = BarDataSet(entries, it.desc)
                 DataSet.valueTextSize = letra
                 DataSet.valueTextColor = ContextCompat.getColor(view!!.context, R.color.GraficoTexto)
                 DataSet.color = colores[0]
+                DataSet.valueFormatter = IValueFormatter { value, _, _, _ -> value.toInt().toString() }
+                data_final.add(DataSet)
+            } else if (it.desc == "CANCELADO") {
+                val DataSet = BarDataSet(entries, it.desc)
+                DataSet.valueTextSize = letra
+                DataSet.valueTextColor = ContextCompat.getColor(view!!.context, R.color.GraficoTexto)
+                DataSet.color = colores[2]
                 DataSet.valueFormatter = IValueFormatter { value, _, _, _ -> value.toInt().toString() }
                 data_final.add(DataSet)
             }
