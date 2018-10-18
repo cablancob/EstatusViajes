@@ -128,7 +128,6 @@ class RiderAdaptador(val viaje: MutableList<ViajeRiderDetalle>) : RecyclerView.A
             if (dato.supply_arrive_location != null) {
                 holder.view.aceptH.text = dato.supply_arrive_time
             } else {
-                holder.view.llegoT.visibility = View.GONE
                 holder.view.llegoH.visibility = View.GONE
                 holder.view.llegoHT.visibility = View.GONE
                 holder.view.llegoLT.visibility = View.GONE
@@ -138,7 +137,6 @@ class RiderAdaptador(val viaje: MutableList<ViajeRiderDetalle>) : RecyclerView.A
     }
 
     fun ocultar_cancelados(holder: RiderViewHolder) {
-        holder.view.tituloCancelacion.visibility = View.GONE
         holder.view.cancelUT.visibility = View.GONE
         holder.view.cancelU.visibility = View.GONE
         holder.view.cancelHT.visibility = View.GONE
@@ -150,7 +148,6 @@ class RiderAdaptador(val viaje: MutableList<ViajeRiderDetalle>) : RecyclerView.A
         holder.view.aceptHT.visibility = View.GONE
         holder.view.aceptH.visibility = View.GONE
         holder.view.aceptLT.visibility = View.GONE
-        holder.view.llegoT.visibility = View.GONE
         holder.view.llegoHT.visibility = View.GONE
         holder.view.llegoH.visibility = View.GONE
         holder.view.llegoLT.visibility = View.GONE

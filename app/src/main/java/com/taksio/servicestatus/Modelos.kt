@@ -16,7 +16,7 @@ class ViajesContados(val request_time: String, val completados: String, val noat
 
 class ViajeDetalle(val rider: String, val estatus: String, val count: Int, val fecha: String) : Serializable
 
-class ViajeRiderDetalle(val supply: String, val hora: String, val origen: String, val destino: String, val tks: String, val supply_accept_time: String?, val cancel_reason: String?, val user_cancel: String?, val supply_arrive_time: String?, val supply_arrive_location: String?, val supply_accept_location: String?, val supply_cancel_location: String?, val cancel_time: String?, val estatus: String)
+class ViajeRiderDetalle(val supply: String, val hora: String, val origen: String?, val destino: String?, val tks: String?, val supply_accept_time: String?, val cancel_reason: String?, val user_cancel: String?, val supply_arrive_time: String?, val supply_arrive_location: String?, val supply_accept_location: String?, val supply_cancel_location: String?, val cancel_time: String?, val estatus: String)
 
 class DatosUsuario(val name: String, val email: String, val phone: String)
 

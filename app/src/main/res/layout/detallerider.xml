@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="HORA:"
+        android:text="Hora:"
         android:textAppearance="@style/Titulos"
         app:layout_constraintEnd_toStartOf="@+id/riderHora"
         app:layout_constraintHorizontal_bias="0.5"
@@ -39,7 +39,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="DRIVER: "
+        android:text="Driver: "
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/riderTitulo" />
 
@@ -61,7 +61,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="TLF: "
+        android:text="Tlf: "
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/driverT" />
 
@@ -84,7 +84,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="COSTO: "
+        android:text="Costo: "
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/telefonoT" />
 
@@ -153,46 +153,35 @@
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.24" />
 
-    <TextView
-        android:id="@+id/tituloCancelacion"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="DATOS CANCELACION"
-        android:textAppearance="@style/Titulos"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ridercontenidoDestino" />
-
 
     <android.support.constraint.Guideline
         android:id="@+id/guideline2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.46" />
+        app:layout_constraintGuide_percent="0.35" />
 
     <TextView
         android:id="@+id/cancelUT"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="USUARIO:"
+        android:layout_marginTop="16dp"
+        android:text="Cancelado Por:"
         android:textAppearance="@style/Titulos"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tituloCancelacion" />
+        app:layout_constraintTop_toBottomOf="@+id/ridercontenidoDestino" />
 
     <TextView
         android:id="@+id/cancelU"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         android:text="USUARIO"
         android:textAppearance="@style/Contenido"
         app:layout_constraintStart_toStartOf="@+id/guideline2"
-        app:layout_constraintTop_toBottomOf="@+id/tituloCancelacion" />
+        app:layout_constraintTop_toBottomOf="@+id/ridercontenidoDestino" />
 
     <TextView
         android:id="@+id/cancelHT"
@@ -200,7 +189,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="HORA:"
+        android:text="Hora:"
         android:textAppearance="@style/Titulos"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cancelU" />
@@ -222,7 +211,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="RAZON:"
+        android:text="Motivo:"
         android:textAppearance="@style/Titulos"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cancelHT" />
@@ -244,7 +233,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="UBICACION (DRIVER):"
+        android:text="Ubicacion:"
         android:textAppearance="@style/Titulos"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cancelRT" />
@@ -255,10 +244,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
-        android:layout_marginEnd="8dp"
-        android:text="DATOS SERVICIO ACEPTADO (DRIVER)"
+        android:text="DRIVER (SERVICIO)"
         android:textAppearance="@style/Titulos"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cancelLT" />
 
@@ -267,8 +254,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="HORA:"
+        android:layout_marginTop="16dp"
+        android:text="Acepto a las:"
         android:textAppearance="@style/Titulos"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/aceptT" />
@@ -278,7 +265,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         android:text="09:00"
         android:textAppearance="@style/Contenido"
         app:layout_constraintStart_toStartOf="@+id/guideline2"
@@ -289,56 +276,43 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
-        android:text="UBICACION (DRIVER):"
+        android:layout_marginTop="8dp"
+        android:text="Ubicación:"
         android:textAppearance="@style/Titulos"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/aceptHT" />
 
 
     <TextView
-        android:id="@+id/llegoT"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="8dp"
-        android:text="DATOS SERVICIO LLEGADA (DRIVER)"
-        android:textAppearance="@style/Titulos"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/aceptLT" />
-
-    <TextView
         android:id="@+id/llegoHT"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="HORA:"
+        android:layout_marginTop="16dp"
+        android:text="Llego a las:"
         android:textAppearance="@style/Titulos"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/llegoT" />
+        app:layout_constraintTop_toBottomOf="@+id/aceptLT" />
 
     <TextView
         android:id="@+id/llegoH"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         android:text="09:00"
         android:textAppearance="@style/Contenido"
         app:layout_constraintStart_toStartOf="@+id/guideline2"
-        app:layout_constraintTop_toBottomOf="@+id/llegoT" />
+        app:layout_constraintTop_toBottomOf="@+id/aceptLT" />
 
     <TextView
         android:id="@+id/llegoLT"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
-        android:text="UBICACION (DRIVER):"
+        android:text="Ubicación:"
         android:textAppearance="@style/Titulos"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"

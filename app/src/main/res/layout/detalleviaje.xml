@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="RIDER:"
+        android:text="Rider:"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -34,9 +34,9 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="CORREO:"
+        android:text="Correo:"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tituloRider"/>
+        app:layout_constraintTop_toBottomOf="@+id/tituloRider" />
 
     <TextView
         android:id="@+id/contenidoEmail"
@@ -56,7 +56,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="TLF:"
+        android:text="Tlf:"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tituloEmail" />
 
@@ -73,7 +73,6 @@
         app:layout_constraintTop_toBottomOf="@+id/contenidoEmail" />
 
 
-
     <TextView
         android:id="@+id/tituloEstatus"
         style="@style/Titulos"
@@ -81,7 +80,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="ESTATUS:"
+        android:text="Estatus:"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tituloCel" />
 
@@ -98,14 +97,13 @@
         app:layout_constraintTop_toBottomOf="@+id/contenidoCel" />
 
 
-
     <TextView
         android:id="@+id/tituloCantidad"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="CANTIDAD:"
+        android:text="Cantidad:"
         android:textAppearance="@style/Titulos"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tituloEstatus" />
