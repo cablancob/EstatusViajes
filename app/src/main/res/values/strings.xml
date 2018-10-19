@@ -7,5 +7,5 @@
     <string name="CANCEL_MISMATCH_PAYLOAD">Excedido de Maletas</string>
     <string name="CANCEL_MISMATCH_ID">No concuerda el perfil</string>
     <string name="CANCEL_OTHER">Otros</string>
-
+    <string name="PRESIONAR_BARRA">PRESIONE UNA BARRA PARA VER MAS DETALLES</string>
 </resources>

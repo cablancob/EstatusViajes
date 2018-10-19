@@ -406,7 +406,17 @@ class ConsultaViajes : Fragment() {
             dialogo_show.cancel()
             (context as AppCompatActivity).supportFragmentManager
                     .beginTransaction()
-                    .add(R.id.Frame, GraficoDetalleRider(), "PRUEBA")
+                    .add(R.id.Frame, GraficoDetalleRider(), "GRAFICO DETALLE RIDER")
+                    .addToBackStack(null)
+                    .commit()
+        }
+
+
+        dialogo_show.graficos_total_driver_cancelados.setOnClickListener {
+            dialogo_show.cancel()
+            (context as AppCompatActivity).supportFragmentManager
+                    .beginTransaction()
+                    .add(R.id.Frame, GraficoTotalDriverCancelados(), "GRAFICO TOTAL CANCELADOS POR DRIVER")
                     .addToBackStack(null)
                     .commit()
         }

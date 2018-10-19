@@ -563,6 +563,32 @@ class ControladorBD(context: Context) : SQLiteOpenHelper(context, NOMBRE_BD, nul
 
     }
 
+    fun GraficoTotalTDC(): MutableList<GraficoTD> {
+        var datos: MutableList<GraficoTD> = mutableListOf()
+        val cursor: Cursor
+
+        cursor = bd.rawQuery(
+                "SELECT ${Tablas.Personas.COLUMNA_USER_CANCEL}, " +
+                        "COUNT(*) " +
+                        "FROM ${Tablas.Personas.NOMBRE_TABLA} " +
+                        "WHERE ${Tablas.Personas.COLUMNA_DESC} == 'TRIP_CANCELLED' " +
+                        "AND ${Tablas.Personas.COLUMNA_USER_CANCEL} LIKE 'supply%' " +
+                        "GROUP BY ${Tablas.Personas.COLUMNA_USER_CANCEL} " +
+                        "ORDER BY COUNT(*) DESC", null
+        )
+
+        if (cursor != null) {
+            if (cursor.count > 0) {
+                cursor.moveToFirst()
+                do {
+                    datos.add(GraficoTD(cursor.getString(0), cursor.getString(1)))
+                } while (cursor.moveToNext())
+            }
+        }
+
+        return datos
+    }
+
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
 

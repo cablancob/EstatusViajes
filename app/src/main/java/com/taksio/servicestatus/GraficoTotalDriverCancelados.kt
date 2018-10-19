@@ -1,6 +1,5 @@
 package com.taksio.servicestatus
 
-
 import Controlador.ControladorBD
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -17,16 +16,15 @@ import com.github.mikephil.charting.formatter.IValueFormatter
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
-import kotlinx.android.synthetic.main.fragment_grafico_total_driver.*
+import kotlinx.android.synthetic.main.fragment_grafico_total_driver_cancelados.*
 
-
-class GraficoTotalDriver : Fragment() {
+class GraficoTotalDriverCancelados : Fragment() {
 
     var datos_bd: MutableList<GraficoTD> = mutableListOf()
     val Etiquetas = ArrayList<String>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_grafico_total_driver, container, false)
+        return inflater.inflate(R.layout.fragment_grafico_total_driver_cancelados, null)
     }
 
     override fun onStart() {
@@ -43,7 +41,7 @@ class GraficoTotalDriver : Fragment() {
 
 
         var contador = 0
-        datos_bd = ControladorBD(context!!).GraficoTotalTD()
+        datos_bd = ControladorBD(context!!).GraficoTotalTDC()
 
         datos_bd.forEach {
             entries = mutableListOf()
@@ -53,18 +51,18 @@ class GraficoTotalDriver : Fragment() {
                 maximo = it.y.toFloat()
             }
 
-            val DataSet = BarDataSet(entries, it.driver)
+            val DataSet = BarDataSet(entries, it.driver.split(":").get(1))
             DataSet.valueTextSize = letra
             DataSet.valueTextColor = ContextCompat.getColor(view!!.context, R.color.GraficoTexto)
-            DataSet.color = ContextCompat.getColor(view!!.context, R.color.CompletadoColor)
+            DataSet.color = ContextCompat.getColor(view!!.context, R.color.CanceladosColor)
             DataSet.valueFormatter = IValueFormatter { value, _, _, _ -> value.toInt().toString() }
             DataSet.setDrawValues(true)
             data_final.add(DataSet)
-            Etiquetas.add(bd.UsuarioDatos(it.driver).name)
+            Etiquetas.add(bd.UsuarioDatos(it.driver.split(":").get(1)).name)
             contador += 1
         }
 
-        val x = GraficoTD.xAxis
+        val x = GraficoTDC.xAxis
 
         x.position = XAxis.XAxisPosition.BOTTOM
         x.labelCount = 3
@@ -74,37 +72,41 @@ class GraficoTotalDriver : Fragment() {
         x.setDrawGridLines(false)
 
 
-        GraficoTD.data = BarData(data_final)
-        GraficoTD.legend.isEnabled = false
-        GraficoTD.description.text = getString(R.string.PRESIONAR_BARRA)
-        GraficoTD.description.textSize = letra - 2
-        GraficoTD.setVisibleXRangeMaximum(3.5f)
-        GraficoTD.animateY(2000)
+        GraficoTDC.data = BarData(data_final)
+        GraficoTDC.legend.isEnabled = false
+        GraficoTDC.description.text = getString(R.string.PRESIONAR_BARRA)
+        GraficoTDC.description.textSize = letra - 2
+        GraficoTDC.setVisibleXRangeMaximum(3.5f)
+        GraficoTDC.animateY(2000)
 
-        GraficoTD.axisLeft.axisMinimum = -1f
-        GraficoTD.axisLeft.textColor = ContextCompat.getColor(view!!.context, R.color.GraficoTexto)
-        GraficoTD.axisRight.textColor = ContextCompat.getColor(view!!.context, R.color.GraficoTexto)
-        GraficoTD.axisRight.axisMinimum = -1f
+        GraficoTDC.axisLeft.axisMinimum = -0.15f
+        GraficoTDC.axisLeft.granularity = 1f
+        GraficoTDC.axisLeft.textColor = ContextCompat.getColor(view!!.context, R.color.GraficoTexto)
+        GraficoTDC.axisRight.textColor = ContextCompat.getColor(view!!.context, R.color.GraficoTexto)
+        GraficoTDC.axisRight.axisMinimum = -0.15f
+        GraficoTDC.axisRight.granularity = 1f
 
-        GraficoTD.extraBottomOffset = 24F
 
-        GraficoTD.setBackgroundColor(ContextCompat.getColor(view!!.context, R.color.FondoGrafico))
+        GraficoTDC.extraBottomOffset = 24F
 
-        GraficoTD.setScaleEnabled(false)
+        GraficoTDC.setBackgroundColor(ContextCompat.getColor(view!!.context, R.color.FondoGrafico))
 
-        GraficoTD.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
+        GraficoTDC.setScaleEnabled(false)
+
+        GraficoTDC.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
             override fun onNothingSelected() {
 
             }
 
             override fun onValueSelected(e: Entry?, h: Highlight?) {
-                Funciones().CargarDatosDriver(datos_bd.get(h!!.dataSetIndex).driver, context!!, Etiquetas.get(h.dataSetIndex), view!!)
+                Funciones().CargarDatosDriver(datos_bd.get(h!!.dataSetIndex).driver.split(":").get(1), context!!, Etiquetas.get(h.dataSetIndex), view!!)
             }
 
         })
 
-        GraficoTD.invalidate()
+        GraficoTDC.invalidate()
 
     }
+
 
 }
