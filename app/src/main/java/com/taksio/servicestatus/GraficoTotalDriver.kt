@@ -8,102 +8,105 @@ import android.support.v4.content.ContextCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.formatter.IValueFormatter
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.highlight.Highlight
-import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import kotlinx.android.synthetic.main.fragment_grafico_total_driver.*
 
 
 class GraficoTotalDriver : Fragment() {
 
-    var datos_bd: MutableList<GraficoTD> = mutableListOf()
-    val Etiquetas = ArrayList<String>()
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+                              savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_grafico_total_driver, container, false)
     }
 
     override fun onStart() {
         super.onStart()
 
-        val letra = 14f
+        var letra = 14f
 
-        val bd = ControladorBD(context!!)
-        var entries: MutableList<BarEntry>
-        val data_final: MutableList<IBarDataSet> = mutableListOf()
+        var entries: MutableList<BarEntry> = mutableListOf()
+        var entries2: MutableList<BarEntry> = mutableListOf()
+        var Etiquetas = ArrayList<String>()
 
-
-        var maximo = 0F
-
+        var bd = ControladorBD(context!!)
 
         var contador = 0
-        datos_bd = ControladorBD(context!!).GraficoTotalTD()
 
+        var datos_bd = bd.GraficoTotalDriverDatos()
         datos_bd.forEach {
-            entries = mutableListOf()
-            entries.add(BarEntry(contador.toFloat(), it.y.toFloat()))
+            if (it.driver.split(":").get(1) != "-") {
+                entries.add(BarEntry(contador.toFloat(), it.completados.toFloat()))
 
-            if (it.y.toFloat() > maximo) {
-                maximo = it.y.toFloat()
+                entries2.add(BarEntry(contador.toFloat(), it.cancelados.toFloat()))
+
+                Etiquetas.add(bd.UsuarioDatos(it.driver.split(":").get(1)).name)
+
+                contador += 1
             }
-
-            val DataSet = BarDataSet(entries, it.driver)
-            DataSet.valueTextSize = letra
-            DataSet.valueTextColor = ContextCompat.getColor(view!!.context, R.color.GraficoTexto)
-            DataSet.color = ContextCompat.getColor(view!!.context, R.color.CompletadoColor)
-            DataSet.valueFormatter = IValueFormatter { value, _, _, _ -> value.toInt().toString() }
-            DataSet.setDrawValues(true)
-            data_final.add(DataSet)
-            Etiquetas.add(bd.UsuarioDatos(it.driver).name)
-            contador += 1
         }
 
-        val x = GraficoTD.xAxis
+        var DataSet = BarDataSet(entries, getString(R.string.Completado))
+        DataSet.valueTextSize = letra
+        DataSet.color = ContextCompat.getColor(context!!, R.color.CompletadoColor)
+        DataSet.valueTextColor = ContextCompat.getColor(view!!.context, R.color.GraficoTexto)
+        DataSet.valueFormatter = IValueFormatter { value, _, _, _ -> value.toInt().toString() }
 
-        x.position = XAxis.XAxisPosition.BOTTOM
-        x.labelCount = 3
+        var DataSet2 = BarDataSet(entries2, getString(R.string.Cancelados))
+        DataSet2.color = ContextCompat.getColor(context!!, R.color.CanceladosColor)
+        DataSet2.valueFormatter = IValueFormatter { value, _, _, _ -> value.toInt().toString() }
+        DataSet2.valueTextColor = ContextCompat.getColor(view!!.context, R.color.GraficoTexto)
+        DataSet2.valueTextSize = letra
+
+        var x = BarChartTotalDriver.xAxis
+        x.granularity = 1f
+        x.labelCount = 2
         x.textSize = letra
-        x.textColor = ContextCompat.getColor(view!!.context, R.color.GraficoTexto)
-        x.isEnabled = false
-        x.setDrawGridLines(false)
+        x.textColor = ContextCompat.getColor(context!!, R.color.GraficoTexto)
+        x.axisMinimum = 0f
+        x.axisMaximum = Etiquetas.size.toFloat()
+        x.valueFormatter = IndexAxisValueFormatter(Etiquetas)
+        x.setCenterAxisLabels(true)
 
+        var data = BarData(DataSet, DataSet2)
 
-        GraficoTD.data = BarData(data_final)
-        GraficoTD.legend.isEnabled = false
-        GraficoTD.description.text = getString(R.string.PRESIONAR_BARRA)
-        GraficoTD.description.textSize = letra - 2
-        GraficoTD.setVisibleXRangeMaximum(3.5f)
-        GraficoTD.animateY(2000)
+        data.barWidth = 0.46f
+        BarChartTotalDriver.data = data
+        BarChartTotalDriver.description.text = "DESPLAZAR A LA DERECHA PARA VER MAS DRIVER"
+        BarChartTotalDriver.description.textColor = ContextCompat.getColor(context!!, R.color.GraficoTexto)
+        BarChartTotalDriver.description.textSize = letra - 2
+        BarChartTotalDriver.legend.textSize = letra
+        BarChartTotalDriver.legend.textColor = ContextCompat.getColor(context!!, R.color.GraficoTexto)
+        BarChartTotalDriver.setPinchZoom(false)
+        BarChartTotalDriver.groupBars(0f, 0.04f, 0.02f)
+        BarChartTotalDriver.setVisibleXRangeMaximum(2f)
+        BarChartTotalDriver.animateXY(2000, 2000)
 
-        GraficoTD.axisLeft.axisMinimum = -1f
-        GraficoTD.axisLeft.textColor = ContextCompat.getColor(view!!.context, R.color.GraficoTexto)
-        GraficoTD.axisRight.textColor = ContextCompat.getColor(view!!.context, R.color.GraficoTexto)
-        GraficoTD.axisRight.axisMinimum = -1f
+        BarChartTotalDriver.axisLeft.textColor = ContextCompat.getColor(context!!, R.color.GraficoTexto)
+        BarChartTotalDriver.axisRight.textColor = ContextCompat.getColor(context!!, R.color.GraficoTexto)
+        BarChartTotalDriver.setBackgroundColor(ContextCompat.getColor(context!!, R.color.FondoGrafico))
 
-        GraficoTD.extraBottomOffset = 24F
+        BarChartTotalDriver.extraTopOffset = 10f
 
-        GraficoTD.setBackgroundColor(ContextCompat.getColor(view!!.context, R.color.FondoGrafico))
-
-        GraficoTD.setScaleEnabled(false)
-
-        GraficoTD.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
+        BarChartTotalDriver.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
             override fun onNothingSelected() {
 
             }
 
             override fun onValueSelected(e: Entry?, h: Highlight?) {
-                Funciones().CargarDatosDriver(datos_bd.get(h!!.dataSetIndex).driver, context!!, Etiquetas.get(h.dataSetIndex), view!!)
+
+                Funciones().CargarDatosDriver(datos_bd.get(h!!.x.toString().split(".").get(0).toInt()).driver.split(":").get(1), context!!, Etiquetas.get(h.x.toString().split(".").get(0).toInt()), view!!)
             }
 
         })
 
-        GraficoTD.invalidate()
+        BarChartTotalDriver.invalidate()
 
     }
 

@@ -74,6 +74,7 @@ class GraficoDetalleRider : Fragment() {
         x.textSize = letra
         x.textColor = ContextCompat.getColor(context!!, R.color.GraficoTexto)
         x.axisMinimum = 0f
+        x.axisMaximum = Etiquetas.size.toFloat()
         x.valueFormatter = IndexAxisValueFormatter(Etiquetas)
         x.setCenterAxisLabels(true)
 

@@ -459,31 +459,6 @@ class ControladorBD(context: Context) : SQLiteOpenHelper(context, NOMBRE_BD, nul
     }
 
 
-    fun GraficoTotalTD(): MutableList<GraficoTD> {
-        var datos: MutableList<GraficoTD> = mutableListOf()
-        val cursor: Cursor
-
-        cursor = bd.rawQuery(
-                "SELECT ${Tablas.Personas.COLUMNA_SUPPLY}, " +
-                        "COUNT(*) " +
-                        "FROM ${Tablas.Personas.NOMBRE_TABLA} " +
-                        "WHERE ${Tablas.Personas.COLUMNA_DESC} == 'TRIP_ENDED' " +
-                        "GROUP BY ${Tablas.Personas.COLUMNA_SUPPLY} " +
-                        "ORDER BY COUNT(*) DESC", null
-        )
-
-        if (cursor != null) {
-            if (cursor.count > 0) {
-                cursor.moveToFirst()
-                do {
-                    datos.add(GraficoTD(cursor.getString(0), cursor.getString(1)))
-                } while (cursor.moveToNext())
-            }
-        }
-
-        return datos
-    }
-
 
     fun GraficoTotalDetalleRider(): MutableList<GraficoTotalR> {
         val datos: MutableList<GraficoTotalR> = mutableListOf()
@@ -563,25 +538,40 @@ class ControladorBD(context: Context) : SQLiteOpenHelper(context, NOMBRE_BD, nul
 
     }
 
-    fun GraficoTotalTDC(): MutableList<GraficoTD> {
-        var datos: MutableList<GraficoTD> = mutableListOf()
+
+    fun GraficoTotalDriverDatos(): MutableList<GraficoTotalDriverDatos> {
+        val datos: MutableList<GraficoTotalDriverDatos> = mutableListOf()
         val cursor: Cursor
 
-        cursor = bd.rawQuery(
-                "SELECT ${Tablas.Personas.COLUMNA_USER_CANCEL}, " +
-                        "COUNT(*) " +
-                        "FROM ${Tablas.Personas.NOMBRE_TABLA} " +
-                        "WHERE ${Tablas.Personas.COLUMNA_DESC} == 'TRIP_CANCELLED' " +
-                        "AND ${Tablas.Personas.COLUMNA_USER_CANCEL} LIKE 'supply%' " +
-                        "GROUP BY ${Tablas.Personas.COLUMNA_USER_CANCEL} " +
-                        "ORDER BY COUNT(*) DESC", null
-        )
+
+        cursor = bd.rawQuery("SELECT " +
+                "A.C1, " +
+                "IFNULL(B.C,'0'), " +
+                "IFNULL(D.CA,'0') " +
+                "FROM " +
+                "(SELECT 'supply:'||${Tablas.Personas.COLUMNA_SUPPLY} as C1 " +
+                "FROM ${Tablas.Personas.NOMBRE_TABLA} " +
+                "GROUP BY C1) A " +
+                "LEFT OUTER JOIN " +
+                "(SELECT 'supply:'||${Tablas.Personas.COLUMNA_SUPPLY} as C2, COUNT(*) as C " +
+                "FROM ${Tablas.Personas.NOMBRE_TABLA} " +
+                "WHERE ${Tablas.Personas.COLUMNA_DESC} == 'TRIP_ENDED' " +
+                "GROUP BY C2) B " +
+                "ON A.C1 == B.C2 " +
+                "LEFT OUTER JOIN " +
+                "(SELECT ${Tablas.Personas.COLUMNA_USER_CANCEL} as C3, COUNT(*) as CA " +
+                "FROM ${Tablas.Personas.NOMBRE_TABLA} " +
+                "WHERE ${Tablas.Personas.COLUMNA_DESC} == 'TRIP_CANCELLED' " +
+                "GROUP BY C3) D " +
+                "ON A.C1 == D.C3 " +
+                "ORDER BY B.C DESC, D.CA DESC "
+                , null)
 
         if (cursor != null) {
             if (cursor.count > 0) {
                 cursor.moveToFirst()
                 do {
-                    datos.add(GraficoTD(cursor.getString(0), cursor.getString(1)))
+                    datos.add(GraficoTotalDriverDatos(cursor.getString(0), cursor.getString(1), cursor.getString(2)))
                 } while (cursor.moveToNext())
             }
         }

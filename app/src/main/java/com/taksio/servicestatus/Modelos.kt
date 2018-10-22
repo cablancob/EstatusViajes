@@ -28,11 +28,11 @@ class Datos(val uid: String)
 
 class GraficoTotalO(val desc: String, val y: String)
 
+class GraficoTotalDriverDatos(val driver: String, val completados: String, val cancelados: String)
+
 class GraficoTotalD(val fecha: String, val desc: String, val y: String)
 
 class GraficoTotalR(val rider: String, val completados: String, val noatendidos: String, val cancelados: String)
-
-class GraficoTD(val driver: String, val y: String)
 
 class FotoDriver(val photo: String)
 

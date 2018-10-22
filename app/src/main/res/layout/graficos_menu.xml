@@ -43,7 +43,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
-        android:text="TOTAL POR RIDER (COMPLETADOS / NO ATENDIDOS)"
+        android:text="TOTAL POR RIDER (COMPLETADOS / NO ATENDIDOS / CANCELADOS)"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/graficos_detalles" />
@@ -57,24 +57,11 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
-        android:text="TOTAL DE SERVICIOS POR DRIVER"
+        android:text="TOTAL POR DRIVER (COMPLETADOS / CANCELADOS)"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/graficos_detalle_rider" />
 
-    <Button
-        android:id="@+id/graficos_total_driver_cancelados"
-        style="@style/Botones"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        android:text="TOTAL DE SERVICIOS CANCELADOS POR DRIVER"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/graficos_total_driver" />
 
 </android.support.constraint.ConstraintLayout>

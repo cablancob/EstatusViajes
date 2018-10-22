@@ -392,15 +392,6 @@ class ConsultaViajes : Fragment() {
                     .commit()
         }
 
-        dialogo_show.graficos_total_driver.setOnClickListener {
-            dialogo_show.cancel()
-            (context as AppCompatActivity).supportFragmentManager
-                    .beginTransaction()
-                    .add(R.id.Frame, GraficoTotalDriver(), "GRAFICO TOTAL DRIVER")
-                    .addToBackStack(null)
-                    .commit()
-        }
-
 
         dialogo_show.graficos_detalle_rider.setOnClickListener {
             dialogo_show.cancel()
@@ -411,21 +402,14 @@ class ConsultaViajes : Fragment() {
                     .commit()
         }
 
-
-        dialogo_show.graficos_total_driver_cancelados.setOnClickListener {
+        dialogo_show.graficos_total_driver.setOnClickListener {
             dialogo_show.cancel()
             (context as AppCompatActivity).supportFragmentManager
                     .beginTransaction()
-                    .add(R.id.Frame, GraficoTotalDriverCancelados(), "GRAFICO TOTAL CANCELADOS POR DRIVER")
+                    .add(R.id.Frame, GraficoTotalDriver(), "GRAFICO TOTAL DRIVER")
                     .addToBackStack(null)
                     .commit()
         }
-
-
-
-
-
-
 
 
 
