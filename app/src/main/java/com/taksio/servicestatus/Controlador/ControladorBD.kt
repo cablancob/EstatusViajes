@@ -5,13 +5,18 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import android.widget.Toast
 import com.google.gson.GsonBuilder
 import com.taksio.servicestatus.*
 import okhttp3.*
 import java.io.IOException
 
 class ControladorBD(context: Context) : SQLiteOpenHelper(context, NOMBRE_BD, null, VERSION_BD) {
+
+    var context = context
+    var error = 0
 
 
     private val bd: SQLiteDatabase
@@ -511,7 +516,9 @@ class ControladorBD(context: Context) : SQLiteOpenHelper(context, NOMBRE_BD, nul
 
     fun UsuarioDatos(uid: String): DatosUsuario {
 
-        var nombre: String
+        var nombre = ""
+        var email = ""
+        var telefono = ""
         var cursor: Cursor
         cursor = bd.rawQuery(
                 "SELECT " +
@@ -523,18 +530,42 @@ class ControladorBD(context: Context) : SQLiteOpenHelper(context, NOMBRE_BD, nul
                         "", null)
         cursor.moveToFirst()
 
-        Log.d("", "----------------------------------")
-        Log.d("UID USUARIO: ", uid)
-        Log.d("NOMBRE USUARIO: ", cursor.getString(0))
+        if (cursor != null) {
+            if (cursor.count > 0) {
 
-        if (cursor.getString(0).split(" ").size > 2) {
-            nombre = "${cursor.getString(0).split(" ")[0]} ${cursor.getString(0).split(" ")[1]}"
-        } else {
-            nombre = cursor.getString(0)
+                Log.d("", "----------------------------------")
+                Log.d("UID USUARIO: ", uid)
+                Log.d("NOMBRE USUARIO: ", cursor.getString(0))
+
+                if (cursor.getString(0).split(" ").size > 2) {
+                    nombre = "${cursor.getString(0).split(" ")[0]} ${cursor.getString(0).split(" ")[1]}"
+                } else {
+                    nombre = cursor.getString(0)
+                }
+
+                email = cursor.getString(1)
+                telefono = cursor.getString(2)
+
+            }
+        }
+
+        if (nombre == "") {
+            if (error == 0) {
+                Toast.makeText((context as MainActivity).applicationContext, "Los datos no se han cargado por completo, por favor intente de nuevo", Toast.LENGTH_SHORT).show()
+
+                (context as AppCompatActivity)
+                        .supportFragmentManager
+                        .beginTransaction()
+                        .add(R.id.Frame, ConsultaViajes(), "VIAJES")
+                        .addToBackStack(null)
+                        .commit()
+
+                error = +1
+            }
         }
 
 
-        return DatosUsuario(nombre, cursor.getString(1), cursor.getString(2))
+        return DatosUsuario(nombre, email, telefono)
 
     }
 
