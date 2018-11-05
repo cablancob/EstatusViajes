@@ -21,7 +21,7 @@ class Tablas {
             val COLUMNA_SUPPLY_ACCEPT_LOCATION = "UbicacionDriverAcepto"
             val COLUMNA_SUPPLY_CANCEL_LOCATION = "UbicacionDriverCancelo"
             val COLUMNA_CANCEL_TIME = "HoraCancelacion"
-
+            val COLUMNA_DATA_FROM = "DataFrom"
 
         }
     }

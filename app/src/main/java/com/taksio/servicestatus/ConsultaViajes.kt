@@ -23,6 +23,8 @@ import okhttp3.*
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.CountDownLatch
+import kotlin.concurrent.thread
 
 
 class ConsultaViajes : Fragment() {
@@ -33,6 +35,7 @@ class ConsultaViajes : Fragment() {
     val formatoHora = "HH:mm:ss"
     var fechaConsultaI = 0L
     var fechaConsultaF = 0L
+    lateinit var semaforo: CountDownLatch
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -104,7 +107,23 @@ class ConsultaViajes : Fragment() {
                     bd!!.Drop()
                     bd!!.Create()
                     if (verifyAvailableNetwork((activity as MainActivity))) {
-                        fetchJson(fechaConsultaI, fechaConsultaF, AlertDialog.Builder(context))
+                        semaforo = CountDownLatch(2)
+                        var dialogo = AlertDialog.Builder(context)
+                        dialogo.setView(layoutInflater.inflate(R.layout.layout_loading_dialog, null))
+                        dialogo.setCancelable(false)
+                        val dialogo_show = dialogo.show()
+                        thread {
+                            AppEndPointData(fechaConsultaI, fechaConsultaF)
+                        }
+                        thread {
+                            CallCenterEndPointData(DesdeContenido.text.toString(), HastaContenido.text.toString())
+                        }
+                        semaforo.await()
+                        dialogo_show.cancel()
+                        bd!!.ActualizarDatosUsuarios(context!!)
+                        ListaViajes.adapter = AdaptadorPrincipal(bd!!.Select())
+                        Graficos.visibility = View.VISIBLE
+                        Log.d("LOG:", "FIN DE CICLO")
                     } else {
                         Toast.makeText(context, "No hay conexion a internet, por favor validar", Toast.LENGTH_SHORT).show()
                     }
@@ -145,11 +164,7 @@ class ConsultaViajes : Fragment() {
         ListaViajes.layoutManager = LinearLayoutManager(activity!!.applicationContext)
     }
 
-    fun fetchJson(fechaInicial: Long, fechaFinal: Long, dialogo: AlertDialog.Builder) {
-        dialogo.setView(layoutInflater.inflate(R.layout.layout_loading_dialog, null))
-        dialogo.setCancelable(false)
-        val dialogo_show = dialogo.show()
-
+    fun AppEndPointData(fechaInicial: Long, fechaFinal: Long) {
 
 
         Log.d("LOG:","COMIENZO DE CICLO")
@@ -191,8 +206,6 @@ class ConsultaViajes : Fragment() {
 
             override fun onResponse(call: Call?, response: Response?) {
 
-
-                activity!!.runOnUiThread {
                     val list: MutableList<Viajes>
                     val listType = object : TypeToken<List<Viajes>>() {
 
@@ -273,7 +286,7 @@ class ConsultaViajes : Fragment() {
                                                     else -> {
                                                         hora.format(Date(it.cancel_time.split(".").get(0).toInt() * 1000L)).toString().trim()
                                                     }
-                                                }
+                                                }, "A"
                                         )
                                 )
 
@@ -325,29 +338,83 @@ class ConsultaViajes : Fragment() {
                                                     else -> {
                                                         hora.format(Date(it.cancel_time.split(".").get(0).toInt() * 1000L)).toString().trim()
                                                     }
-                                                }
+                                                }, "A"
                                         )
                                 )
                             }
 
                         }
                     }
-
-
-                    bd!!.ActualizarDatosUsuarios(context!!)
-
-                    ListaViajes.adapter = AdaptadorPrincipal(bd!!.Select())
-                    Graficos.visibility = View.VISIBLE
-                    Log.d("LOG:","FIN DE CICLO")
-
-                    dialogo_show.cancel()
-
-
-                }
+                semaforo.countDown()
             }
 
         }
         )
+    }
+
+    fun CallCenterEndPointData(date_from: String, date_to: String) {
+        var desde = ""
+        var hasta = ""
+
+        if (date_from != "AAAA-MM-DD") {
+            desde = date_from
+        }
+
+        if (date_to != "AAAA-MM-DD") {
+            hasta = date_to
+        }
+
+        var Json = "{\"date_from\" : \"${desde}\",\"date_to\" : \"${hasta}\"}"
+
+        val client = OkHttpClient()
+
+
+        client.newCall(Request.Builder()
+                .url("http://experimental.taksio.net:8111/callcenter")
+                .post(RequestBody.create(MediaType.parse("application/json; charset=utf-8"), Json))
+                .build()).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                val list: MutableList<CallCenterData>
+                val listType = object : TypeToken<List<CallCenterData>>() {
+
+                }.type
+                list = GsonBuilder().create().fromJson(response.body()?.string(), listType)
+
+
+                list.forEach {
+                    bd!!.Insert(Viajes(
+                            "TRIP_ENDED",
+                            it.date_ride,
+                            it.rider,
+                            it.driver,
+                            "-",
+                            features(it.origin, it.destination),
+                            billing(fare(it.tks)),
+                            "-",
+                            "-",
+                            "-",
+                            "-",
+                            "-",
+                            "-",
+                            "-",
+                            "-",
+                            "C"
+                    ))
+                }
+                semaforo.countDown()
+            }
+
+        })
+
+
+
+
+
+
     }
 
     fun ValidarCampos(): Boolean {

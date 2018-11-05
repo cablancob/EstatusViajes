@@ -134,6 +134,11 @@ class RiderAdaptador(val viaje: MutableList<ViajeRiderDetalle>) : RecyclerView.A
             }
 
         }
+
+        if (dato.date_from == "C") {
+            holder.view.riderTitulo.text = "Call Center"
+            holder.view.riderHora.visibility = View.GONE
+        }
     }
 
     fun ocultar_cancelados(holder: RiderViewHolder) {

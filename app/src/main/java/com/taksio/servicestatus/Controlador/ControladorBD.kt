@@ -54,6 +54,7 @@ class ControladorBD(context: Context) : SQLiteOpenHelper(context, NOMBRE_BD, nul
         valores.put(Tablas.Personas.COLUMNA_SUPPLY_ACCEPT_LOCATION, viajes.supply_accept_location)
         valores.put(Tablas.Personas.COLUMNA_SUPPLY_CANCEL_LOCATION, viajes.supply_cancel_location)
         valores.put(Tablas.Personas.COLUMNA_CANCEL_TIME, viajes.cancel_time)
+        valores.put(Tablas.Personas.COLUMNA_DATA_FROM, viajes.data_from)
         bd.insert(Tablas.Personas.NOMBRE_TABLA, null, valores)
     }
 
@@ -62,7 +63,7 @@ class ControladorBD(context: Context) : SQLiteOpenHelper(context, NOMBRE_BD, nul
         bd.execSQL("DROP TABLE IF EXISTS ${Tablas.Personas.NOMBRE_TABLA}")
 
 
-        //bd!!.execSQL("DROP TABLE IF EXISTS ${Tablas.Usuarios.NOMBRE_TABLA}")
+        bd.execSQL("DROP TABLE IF EXISTS ${Tablas.Usuarios.NOMBRE_TABLA}")
     }
 
     fun Create() {
@@ -83,7 +84,8 @@ class ControladorBD(context: Context) : SQLiteOpenHelper(context, NOMBRE_BD, nul
                 "${Tablas.Personas.COLUMNA_SUPPLY_ARRIVE_LOCATION} TEXT NULL," +
                 "${Tablas.Personas.COLUMNA_SUPPLY_ACCEPT_LOCATION} TEXT NULL," +
                 "${Tablas.Personas.COLUMNA_SUPPLY_CANCEL_LOCATION} TEXT NULL," +
-                "${Tablas.Personas.COLUMNA_CANCEL_TIME} TEXT NULL" +
+                "${Tablas.Personas.COLUMNA_CANCEL_TIME} TEXT NULL," +
+                "${Tablas.Personas.COLUMNA_DATA_FROM} TEXT NULL" +
                 ")")
 
         bd.execSQL("CREATE TABLE IF NOT EXISTS ${Tablas.Usuarios.NOMBRE_TABLA} " +
@@ -187,7 +189,8 @@ class ControladorBD(context: Context) : SQLiteOpenHelper(context, NOMBRE_BD, nul
                         "${Tablas.Personas.COLUMNA_SUPPLY_ACCEPT_LOCATION}, " +
                         "${Tablas.Personas.COLUMNA_SUPPLY_CANCEL_LOCATION}, " +
                         "${Tablas.Personas.COLUMNA_CANCEL_TIME}, " +
-                        "${Tablas.Personas.COLUMNA_DESC} " +
+                        "${Tablas.Personas.COLUMNA_DESC}, " +
+                        "${Tablas.Personas.COLUMNA_DATA_FROM} " +
                         "FROM ${Tablas.Personas.NOMBRE_TABLA} " +
                         "WHERE ${Tablas.Personas.COLUMNA_FECHA} == '${fecha.trim()}' " +
                         "AND ${Tablas.Personas.COLUMNA_DEMAND} == '${rider.trim()}' " +
@@ -200,7 +203,7 @@ class ControladorBD(context: Context) : SQLiteOpenHelper(context, NOMBRE_BD, nul
                 do {
 
                     lista.add(ViajeRiderDetalle(cursor.getString(0),
-                            cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5), cursor.getString(6), cursor.getString(7), cursor.getString(8), cursor.getString(9), cursor.getString(10), cursor.getString(11), cursor.getString(12), cursor.getString(13)))
+                            cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5), cursor.getString(6), cursor.getString(7), cursor.getString(8), cursor.getString(9), cursor.getString(10), cursor.getString(11), cursor.getString(12), cursor.getString(13), cursor.getString(14)))
                 } while (cursor.moveToNext())
             }
         }
@@ -249,6 +252,8 @@ class ControladorBD(context: Context) : SQLiteOpenHelper(context, NOMBRE_BD, nul
                         Log.d("RIDER UUID", it.uid)
                         Log.d("RIDER NOMBRE", list.name)
                         Log.d("", "------------------------")
+
+
                         bd.execSQL("INSERT INTO ${Tablas.Usuarios.NOMBRE_TABLA} " +
                                 "( " +
                                 "${Tablas.Usuarios.COLUMNA_UID} ," +
@@ -259,7 +264,7 @@ class ControladorBD(context: Context) : SQLiteOpenHelper(context, NOMBRE_BD, nul
                                 "VALUES " +
                                 "( " +
                                 "'${it.uid.trim()}', " +
-                                "'${list.name.trim().replace("'","´")}', " +
+                                "'${list.name.trim().replace("'", "´")}', " +
                                 "'${list.email.trim()}', " +
                                 "'${list.phone.trim()}' " +
                                 ") ")
@@ -323,7 +328,7 @@ class ControladorBD(context: Context) : SQLiteOpenHelper(context, NOMBRE_BD, nul
                                 "VALUES " +
                                 "( " +
                                 "'${it.uid.trim()}', " +
-                                "'${list.name1.trim()} ${list.lastname1.trim().replace("'","´")}', " +
+                                "'${list.name1.trim()} ${list.lastname1.trim().replace("'", "´")}', " +
                                 "'${list.phone.trim()}' " +
                                 ") ")
 
@@ -464,7 +469,6 @@ class ControladorBD(context: Context) : SQLiteOpenHelper(context, NOMBRE_BD, nul
     }
 
 
-
     fun GraficoTotalDetalleRider(): MutableList<GraficoTotalR> {
         val datos: MutableList<GraficoTotalR> = mutableListOf()
         val cursor: Cursor
@@ -541,6 +545,10 @@ class ControladorBD(context: Context) : SQLiteOpenHelper(context, NOMBRE_BD, nul
                     nombre = "${cursor.getString(0).split(" ")[0]} ${cursor.getString(0).split(" ")[1]}"
                 } else {
                     nombre = cursor.getString(0)
+                }
+
+                if (uid.trim() == "a8a90dd8-02fd-4f86-815b-90cab0435d46" || uid.trim() == "5f5f0ba6-45eb-4d7a-a6ad-9a5d0c80c59c") {
+                    nombre = "Taksio Corporativo"
                 }
 
                 email = cursor.getString(1)
