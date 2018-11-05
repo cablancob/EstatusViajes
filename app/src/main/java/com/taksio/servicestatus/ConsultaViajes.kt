@@ -108,10 +108,15 @@ class ConsultaViajes : Fragment() {
                     bd!!.Create()
                     if (verifyAvailableNetwork((activity as MainActivity))) {
                         semaforo = CountDownLatch(2)
-                        var dialogo = AlertDialog.Builder(context)
-                        dialogo.setView(layoutInflater.inflate(R.layout.layout_loading_dialog, null))
-                        dialogo.setCancelable(false)
-                        val dialogo_show = dialogo.show()
+                        activity!!.runOnUiThread(object : Runnable {
+                            override fun run() {
+                                var dialogo = AlertDialog.Builder(context)
+                                dialogo.setView(layoutInflater.inflate(R.layout.layout_loading_dialog, null))
+                                dialogo.setCancelable(false)
+                                val dialogo_show = dialogo.show()
+                            }
+
+                        })
                         thread {
                             AppEndPointData(fechaConsultaI, fechaConsultaF)
                         }
@@ -119,7 +124,6 @@ class ConsultaViajes : Fragment() {
                             CallCenterEndPointData(DesdeContenido.text.toString(), HastaContenido.text.toString())
                         }
                         semaforo.await()
-                        dialogo_show.cancel()
                         bd!!.ActualizarDatosUsuarios(context!!)
                         ListaViajes.adapter = AdaptadorPrincipal(bd!!.Select())
                         Graficos.visibility = View.VISIBLE

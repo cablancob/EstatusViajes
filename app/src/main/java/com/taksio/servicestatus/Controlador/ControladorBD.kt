@@ -63,7 +63,7 @@ class ControladorBD(context: Context) : SQLiteOpenHelper(context, NOMBRE_BD, nul
         bd.execSQL("DROP TABLE IF EXISTS ${Tablas.Personas.NOMBRE_TABLA}")
 
 
-        bd.execSQL("DROP TABLE IF EXISTS ${Tablas.Usuarios.NOMBRE_TABLA}")
+        //bd.execSQL("DROP TABLE IF EXISTS ${Tablas.Usuarios.NOMBRE_TABLA}")
     }
 
     fun Create() {
