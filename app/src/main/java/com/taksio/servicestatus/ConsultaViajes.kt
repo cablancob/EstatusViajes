@@ -19,12 +19,13 @@ import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.fragment_consulta_viajes.*
 import kotlinx.android.synthetic.main.graficos_menu.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import okhttp3.*
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.CountDownLatch
-import kotlin.concurrent.thread
 
 
 class ConsultaViajes : Fragment() {
@@ -112,14 +113,13 @@ class ConsultaViajes : Fragment() {
                         dialogo.setCancelable(false)
                         val dialogo_show = dialogo.show()
 
-
-                        thread {
+                        GlobalScope.launch {
                             AppEndPointData(fechaConsultaI, fechaConsultaF)
                         }
-                        thread {
+                        GlobalScope.launch {
                             CallCenterEndPointData(DesdeContenido.text.toString(), HastaContenido.text.toString())
                         }
-                        thread {
+                        GlobalScope.launch {
                             semaforo.await()
                             activity!!.runOnUiThread {
                                 bd!!.ActualizarDatosUsuarios(context!!)
@@ -422,6 +422,7 @@ class ConsultaViajes : Fragment() {
                                 "C"
                         ))
                     }
+                    println("FIN DEL CICLO CALL")
                     semaforo.countDown()
                 } else {
                     semaforo.countDown()
