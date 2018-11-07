@@ -37,7 +37,6 @@ class ConsultaViajes : Fragment() {
     var fechaConsultaF = 0L
     lateinit var semaforo: CountDownLatch
 
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_consulta_viajes, container, false)
     }
@@ -108,33 +107,37 @@ class ConsultaViajes : Fragment() {
                     bd!!.Create()
                     if (verifyAvailableNetwork((activity as MainActivity))) {
                         semaforo = CountDownLatch(2)
-                        activity!!.runOnUiThread(object : Runnable {
-                            override fun run() {
-                                var dialogo = AlertDialog.Builder(context)
-                                dialogo.setView(layoutInflater.inflate(R.layout.layout_loading_dialog, null))
-                                dialogo.setCancelable(false)
-                                val dialogo_show = dialogo.show()
-                            }
+                        var dialogo = AlertDialog.Builder(context)
+                        dialogo.setView(layoutInflater.inflate(R.layout.layout_loading_dialog, null))
+                        dialogo.setCancelable(false)
+                        val dialogo_show = dialogo.show()
 
-                        })
+
                         thread {
                             AppEndPointData(fechaConsultaI, fechaConsultaF)
                         }
                         thread {
                             CallCenterEndPointData(DesdeContenido.text.toString(), HastaContenido.text.toString())
                         }
-                        semaforo.await()
-                        bd!!.ActualizarDatosUsuarios(context!!)
-                        ListaViajes.adapter = AdaptadorPrincipal(bd!!.Select())
-                        Graficos.visibility = View.VISIBLE
-                        Log.d("LOG:", "FIN DE CICLO")
+                        thread {
+                            semaforo.await()
+                            activity!!.runOnUiThread {
+                                bd!!.ActualizarDatosUsuarios(context!!)
+                                ListaViajes.adapter = AdaptadorPrincipal(bd!!.Select())
+                                Graficos.visibility = View.VISIBLE
+                                dialogo_show.cancel()
+                                Log.d("LOG:", "FIN DE CICLO PRINCIPAL")
+                            }
+                        }
+
+
                     } else {
                         Toast.makeText(context, "No hay conexion a internet, por favor validar", Toast.LENGTH_SHORT).show()
                     }
 
                 }
-             /*   ListaViajes.adapter = AdaptadorPrincipal(bd!!.Select())
-                Graficos.visibility = View.VISIBLE*/
+                /*   ListaViajes.adapter = AdaptadorPrincipal(bd!!.Select())
+                   Graficos.visibility = View.VISIBLE*/
 
             }
 
@@ -171,7 +174,7 @@ class ConsultaViajes : Fragment() {
     fun AppEndPointData(fechaInicial: Long, fechaFinal: Long) {
 
 
-        Log.d("LOG:","COMIENZO DE CICLO")
+        Log.d("LOG:", "COMIENZO DE CICLO")
 
         var url = "https://services.taksio.net/services"
 
@@ -204,152 +207,154 @@ class ConsultaViajes : Fragment() {
                 (activity as MainActivity).runOnUiThread {
                     Toast.makeText(context, "Hubo un problema en la consulta, por favor verifique su conexión a Internet e intente de nuevo", Toast.LENGTH_SHORT).show()
                 }
+                semaforo.countDown()
 
 
             }
 
             override fun onResponse(call: Call?, response: Response?) {
 
-                    val list: MutableList<Viajes>
-                    val listType = object : TypeToken<List<Viajes>>() {
+                val list: MutableList<Viajes>
+                val listType = object : TypeToken<List<Viajes>>() {
 
-                    }.type
+                }.type
 
-                    if (DesdeContenido.text != "AAAA-MM-DD") {
+                if (DesdeContenido.text != "AAAA-MM-DD") {
 
-                        cal = Calendar.getInstance()
-                        cal.set(Calendar.YEAR, DesdeContenido.text.split("-")[0].toInt())
-                        cal.set(Calendar.MONTH, DesdeContenido.text.split("-")[1].toInt() - 1)
-                        cal.set(Calendar.DATE, DesdeContenido.text.split("-")[2].toInt())
+                    cal = Calendar.getInstance()
+                    cal.set(Calendar.YEAR, DesdeContenido.text.split("-")[0].toInt())
+                    cal.set(Calendar.MONTH, DesdeContenido.text.split("-")[1].toInt() - 1)
+                    cal.set(Calendar.DATE, DesdeContenido.text.split("-")[2].toInt())
+
+                } else {
+                    cal = Calendar.getInstance()
+                    cal.set(Calendar.YEAR, 2018)
+                    cal.set(Calendar.MONTH, 2)
+                    cal.set(Calendar.DATE, 9)
+                }
+
+
+
+                list = GsonBuilder().create().fromJson(response?.body()?.string(), listType)
+
+                val jdf = SimpleDateFormat(formatoFecha)
+                jdf.timeZone = TimeZone.getTimeZone("GMT-4")
+                val hora = SimpleDateFormat(formatoHora)
+                hora.timeZone = TimeZone.getTimeZone("GMT-4")
+
+                list.forEach {
+                    if (it.desc.trim() != "TRIP_CANCELLED") {
+                        val date = Date(it.request_time.split(".").get(0).toInt() * 1000L)
+                        // format of the date
+
+
+                        bd!!.Insert(
+                                Viajes(it.desc.trim(),
+                                        jdf.format(date).trim(),
+                                        it.demand.split(":")[1].trim(),
+                                        when {
+                                            it.supply == null -> {
+                                                "-"
+                                            }
+                                            else -> {
+                                                it.supply.split(":")[1].trim()
+                                            }
+
+                                        },
+                                        hora.format(date).toString().trim(),
+                                        features(it.features.origin, it.features.destination),
+                                        billing(fare(it.billing.fare.amount)),
+                                        when {
+                                            it.supply_accept_time == null -> {
+                                                "-"
+                                            }
+                                            else -> {
+                                                hora.format(Date(it.supply_accept_time.split(".").get(0).toInt() * 1000L)).toString().trim()
+                                            }
+                                        },
+                                        it.cancel_reason,
+                                        it.user_cancel,
+                                        when {
+                                            it.supply_arrive_time == null -> {
+                                                "-"
+                                            }
+                                            else -> {
+                                                hora.format(Date(it.supply_arrive_time.split(".").get(0).toInt() * 1000L)).toString().trim()
+                                            }
+                                        },
+                                        it.supply_arrive_location,
+                                        it.supply_accept_location,
+                                        it.supply_cancel_location,
+                                        when {
+                                            it.cancel_time == null -> {
+                                                "-"
+                                            }
+                                            else -> {
+                                                hora.format(Date(it.cancel_time.split(".").get(0).toInt() * 1000L)).toString().trim()
+                                            }
+                                        }, "A"
+                                )
+                        )
 
                     } else {
-                        cal = Calendar.getInstance()
-                        cal.set(Calendar.YEAR, 2018)
-                        cal.set(Calendar.MONTH, 2)
-                        cal.set(Calendar.DATE, 9)
-                    }
-
-
-
-                    list = GsonBuilder().create().fromJson(response?.body()?.string(), listType)
-
-                    val jdf = SimpleDateFormat(formatoFecha)
-                    jdf.timeZone = TimeZone.getTimeZone("GMT-4")
-                    val hora = SimpleDateFormat(formatoHora)
-                    hora.timeZone = TimeZone.getTimeZone("GMT-4")
-
-                    list.forEach {
-                        if (it.desc.trim() != "TRIP_CANCELLED") {
+                        var cancelado = it
+                        if (cancelado.supply_accept_location != null) {
                             val date = Date(it.request_time.split(".").get(0).toInt() * 1000L)
-                            // format of the date
+                            bd!!.Insert(
+                                    Viajes(it.desc.trim(),
+                                            jdf.format(date).trim(),
+                                            it.demand.split(":")[1].trim(),
+                                            when {
+                                                it.supply == null -> {
+                                                    "-"
+                                                }
+                                                else -> {
+                                                    it.supply.split(":")[1].trim()
+                                                }
 
-
-
-
-                                bd!!.Insert(
-                                        Viajes(it.desc.trim(),
-                                                jdf.format(date).trim(),
-                                                it.demand.split(":")[1].trim(),
-                                                when {
-                                                    it.supply == null -> {
-                                                        "-"
-                                                    }
-                                                    else -> {
-                                                        it.supply.split(":")[1].trim()
-                                                    }
-
-                                                },
-                                                hora.format(date).toString().trim(),
-                                                features(it.features.origin, it.features.destination),
-                                                billing(fare(it.billing.fare.amount)),
-                                                when {
-                                                    it.supply_accept_time == null -> {
-                                                        "-"
-                                                    }
-                                                    else -> {
-                                                        hora.format(Date(it.supply_accept_time.split(".").get(0).toInt() * 1000L)).toString().trim()
-                                                    }
-                                                },
-                                                it.cancel_reason,
-                                                it.user_cancel,
-                                                when {
-                                                    it.supply_arrive_time == null -> {
-                                                        "-"
-                                                    }
-                                                    else -> {
-                                                        hora.format(Date(it.supply_arrive_time.split(".").get(0).toInt() * 1000L)).toString().trim()
-                                                    }
-                                                },
-                                                it.supply_arrive_location,
-                                                it.supply_accept_location,
-                                                it.supply_cancel_location,
-                                                when {
-                                                    it.cancel_time == null -> {
-                                                        "-"
-                                                    }
-                                                    else -> {
-                                                        hora.format(Date(it.cancel_time.split(".").get(0).toInt() * 1000L)).toString().trim()
-                                                    }
-                                                }, "A"
-                                        )
-                                )
-
-                        } else {
-                            var cancelado = it
-                            if (cancelado.supply_accept_location != null) {
-                                val date = Date(it.request_time.split(".").get(0).toInt() * 1000L)
-                                bd!!.Insert(
-                                        Viajes(it.desc.trim(),
-                                                jdf.format(date).trim(),
-                                                it.demand.split(":")[1].trim(),
-                                                when {
-                                                    it.supply == null -> {
-                                                        "-"
-                                                    }
-                                                    else -> {
-                                                        it.supply.split(":")[1].trim()
-                                                    }
-
-                                                },
-                                                hora.format(date).toString().trim(),
-                                                features(it.features.origin, it.features.destination),
-                                                billing(fare(it.billing.fare.amount)),
-                                                when {
-                                                    it.supply_accept_time == null -> {
-                                                        "-"
-                                                    }
-                                                    else -> {
-                                                        hora.format(Date(it.supply_accept_time.split(".").get(0).toInt() * 1000L)).toString().trim()
-                                                    }
-                                                },
-                                                it.cancel_reason,
-                                                it.user_cancel,
-                                                when {
-                                                    it.supply_arrive_time == null -> {
-                                                        "-"
-                                                    }
-                                                    else -> {
-                                                        hora.format(Date(it.supply_arrive_time.split(".").get(0).toInt() * 1000L)).toString().trim()
-                                                    }
-                                                },
-                                                it.supply_arrive_location,
-                                                it.supply_accept_location,
-                                                it.supply_cancel_location,
-                                                when {
-                                                    it.cancel_time == null -> {
-                                                        "-"
-                                                    }
-                                                    else -> {
-                                                        hora.format(Date(it.cancel_time.split(".").get(0).toInt() * 1000L)).toString().trim()
-                                                    }
-                                                }, "A"
-                                        )
-                                )
-                            }
-
+                                            },
+                                            hora.format(date).toString().trim(),
+                                            features(it.features.origin, it.features.destination),
+                                            billing(fare(it.billing.fare.amount)),
+                                            when {
+                                                it.supply_accept_time == null -> {
+                                                    "-"
+                                                }
+                                                else -> {
+                                                    hora.format(Date(it.supply_accept_time.split(".").get(0).toInt() * 1000L)).toString().trim()
+                                                }
+                                            },
+                                            it.cancel_reason,
+                                            it.user_cancel,
+                                            when {
+                                                it.supply_arrive_time == null -> {
+                                                    "-"
+                                                }
+                                                else -> {
+                                                    hora.format(Date(it.supply_arrive_time.split(".").get(0).toInt() * 1000L)).toString().trim()
+                                                }
+                                            },
+                                            it.supply_arrive_location,
+                                            it.supply_accept_location,
+                                            it.supply_cancel_location,
+                                            when {
+                                                it.cancel_time == null -> {
+                                                    "-"
+                                                }
+                                                else -> {
+                                                    hora.format(Date(it.cancel_time.split(".").get(0).toInt() * 1000L)).toString().trim()
+                                                }
+                                            }, "A"
+                                    )
+                            )
                         }
+
                     }
+                }
                 semaforo.countDown()
+                println("FIN DEL CICLO APP")
+
+
             }
 
         }
@@ -379,6 +384,12 @@ class ConsultaViajes : Fragment() {
                 .build()).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
 
+                (activity as MainActivity).runOnUiThread {
+                    Toast.makeText(context, "Hubo un problema en la consulta, por favor verifique su conexión a Internet e intente de nuevo", Toast.LENGTH_SHORT).show()
+                }
+                semaforo.countDown()
+
+
             }
 
             override fun onResponse(call: Call, response: Response) {
@@ -386,37 +397,38 @@ class ConsultaViajes : Fragment() {
                 val listType = object : TypeToken<List<CallCenterData>>() {
 
                 }.type
-                list = GsonBuilder().create().fromJson(response.body()?.string(), listType)
+                var data = response.body()?.string()?.trim()
+                if (data != "") {
+                    list = GsonBuilder().create().fromJson(data, listType)
 
 
-                list.forEach {
-                    bd!!.Insert(Viajes(
-                            "TRIP_ENDED",
-                            it.date_ride,
-                            it.rider,
-                            it.driver,
-                            "-",
-                            features(it.origin, it.destination),
-                            billing(fare(it.tks)),
-                            "-",
-                            "-",
-                            "-",
-                            "-",
-                            "-",
-                            "-",
-                            "-",
-                            "-",
-                            "C"
-                    ))
+                    list.forEach {
+                        bd!!.Insert(Viajes(
+                                "TRIP_ENDED",
+                                it.date_ride,
+                                it.rider,
+                                it.driver,
+                                "-",
+                                features(it.origin, it.destination),
+                                billing(fare(it.tks)),
+                                "-",
+                                "-",
+                                "-",
+                                "-",
+                                "-",
+                                "-",
+                                "-",
+                                "-",
+                                "C"
+                        ))
+                    }
+                    semaforo.countDown()
+                } else {
+                    semaforo.countDown()
                 }
-                semaforo.countDown()
             }
 
         })
-
-
-
-
 
 
     }
@@ -432,9 +444,9 @@ class ConsultaViajes : Fragment() {
         return boolean
     }
 
-    fun verifyAvailableNetwork(activity: AppCompatActivity):Boolean{
-        val connectivityManager=activity.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val networkInfo=connectivityManager.activeNetworkInfo
+    fun verifyAvailableNetwork(activity: AppCompatActivity): Boolean {
+        val connectivityManager = activity.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo = connectivityManager.activeNetworkInfo
         //return  networkInfo!=null && networkInfo.isConnected
         return true
     }
@@ -458,7 +470,7 @@ class ConsultaViajes : Fragment() {
             dialogo_show.cancel()
             (context as AppCompatActivity).supportFragmentManager
                     .beginTransaction()
-                    .add(R.id.Frame, GraficoDetalle(),"GRAFICOS DETALLES")
+                    .add(R.id.Frame, GraficoDetalle(), "GRAFICOS DETALLES")
                     .addToBackStack(null)
                     .commit()
         }
@@ -483,7 +495,7 @@ class ConsultaViajes : Fragment() {
         }
 
 
-
     }
+
 
 }
