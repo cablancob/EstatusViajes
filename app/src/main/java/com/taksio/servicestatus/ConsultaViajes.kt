@@ -141,7 +141,7 @@ class ConsultaViajes : Fragment() {
                    Graficos.visibility = View.VISIBLE*/
                 } catch (e: Exception) {
                     activity!!.runOnUiThread {
-                        Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()
+                        Toast.makeText(context, e.toString(), Toast.LENGTH_LONG).show()
                     }
                 }
             }
@@ -218,7 +218,6 @@ class ConsultaViajes : Fragment() {
             }
 
             override fun onResponse(call: Call?, response: Response?) {
-
                 val list: MutableList<Viajes>
                 val listType = object : TypeToken<List<Viajes>>() {
 
@@ -358,10 +357,7 @@ class ConsultaViajes : Fragment() {
                 }
                 semaforo.countDown()
                 println("FIN DEL CICLO APP")
-
-
             }
-
         }
         )
     }
