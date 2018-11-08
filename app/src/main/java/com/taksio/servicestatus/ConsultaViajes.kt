@@ -103,42 +103,47 @@ class ConsultaViajes : Fragment() {
 
         Consultar.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View?) {
-                if (ValidarCampos()) {
-                    bd!!.Drop()
-                    bd!!.Create()
-                    if (verifyAvailableNetwork((activity as MainActivity))) {
-                        semaforo = CountDownLatch(2)
-                        var dialogo = AlertDialog.Builder(context)
-                        dialogo.setView(layoutInflater.inflate(R.layout.layout_loading_dialog, null))
-                        dialogo.setCancelable(false)
-                        val dialogo_show = dialogo.show()
+                try {
+                    if (ValidarCampos()) {
+                        bd!!.Drop()
+                        bd!!.Create()
+                        if (verifyAvailableNetwork((activity as MainActivity))) {
+                            semaforo = CountDownLatch(2)
+                            var dialogo = AlertDialog.Builder(context)
+                            dialogo.setView(layoutInflater.inflate(R.layout.layout_loading_dialog, null))
+                            dialogo.setCancelable(false)
+                            val dialogo_show = dialogo.show()
 
-                        GlobalScope.launch {
-                            AppEndPointData(fechaConsultaI, fechaConsultaF)
-                        }
-                        GlobalScope.launch {
-                            CallCenterEndPointData(DesdeContenido.text.toString(), HastaContenido.text.toString())
-                        }
-                        GlobalScope.launch {
-                            semaforo.await()
-                            activity!!.runOnUiThread {
-                                bd!!.ActualizarDatosUsuarios(context!!)
-                                ListaViajes.adapter = AdaptadorPrincipal(bd!!.Select())
-                                Graficos.visibility = View.VISIBLE
-                                dialogo_show.cancel()
-                                Log.d("LOG:", "FIN DE CICLO PRINCIPAL")
+                            GlobalScope.launch {
+                                AppEndPointData(fechaConsultaI, fechaConsultaF)
                             }
+                            GlobalScope.launch {
+                                CallCenterEndPointData(DesdeContenido.text.toString(), HastaContenido.text.toString())
+                            }
+                            GlobalScope.launch {
+                                semaforo.await()
+                                activity!!.runOnUiThread {
+                                    bd!!.ActualizarDatosUsuarios(context!!)
+                                    ListaViajes.adapter = AdaptadorPrincipal(bd!!.Select())
+                                    Graficos.visibility = View.VISIBLE
+                                    dialogo_show.cancel()
+                                    Log.d("LOG:", "FIN DE CICLO PRINCIPAL")
+                                }
+                            }
+
+
+                        } else {
+                            Toast.makeText(context, "No hay conexion a internet, por favor validar", Toast.LENGTH_SHORT).show()
                         }
 
-
-                    } else {
-                        Toast.makeText(context, "No hay conexion a internet, por favor validar", Toast.LENGTH_SHORT).show()
                     }
-
-                }
-                /*   ListaViajes.adapter = AdaptadorPrincipal(bd!!.Select())
+                    /*   ListaViajes.adapter = AdaptadorPrincipal(bd!!.Select())
                    Graficos.visibility = View.VISIBLE*/
-
+                } catch (e: Exception) {
+                    activity!!.runOnUiThread {
+                        Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()
+                    }
+                }
             }
 
         })
