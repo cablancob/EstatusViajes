@@ -38,6 +38,10 @@ class MainActivity : AppCompatActivity() {
                 permisos.add(Manifest.permission.ACCESS_NETWORK_STATE)
             }
 
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                permisos.add(Manifest.permission.ACCESS_FINE_LOCATION)
+            }
+
             if (permisos.size > 0) {
                 val arreglo = arrayOfNulls<String>(permisos.size)
                 permisos.toArray(arreglo)

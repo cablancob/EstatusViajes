@@ -6,6 +6,16 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
+    <ImageView
+        android:id="@+id/llegoImg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="12dp"
+        app:layout_constraintStart_toStartOf="@+id/guideline2"
+        app:layout_constraintTop_toBottomOf="@+id/llegoH"
+        app:srcCompat="@drawable/ic_google_maps" />
+
     <TextView
         android:id="@+id/riderTitulo"
         android:layout_width="wrap_content"
@@ -159,7 +169,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.35" />
+        app:layout_constraintGuide_percent="0.42" />
 
     <TextView
         android:id="@+id/cancelUT"
@@ -233,7 +243,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="Ubicacion:"
+        android:text="Ubicacion (Driver):"
         android:textAppearance="@style/Titulos"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cancelRT" />
@@ -276,7 +286,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         android:text="Ubicación:"
         android:textAppearance="@style/Titulos"
         app:layout_constraintStart_toStartOf="parent"
@@ -310,7 +320,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         android:layout_marginBottom="8dp"
         android:text="Ubicación:"
         android:textAppearance="@style/Titulos"
@@ -326,6 +336,26 @@
         android:background="@color/GraficoTexto"
         android:text="TextView"
         app:layout_constraintTop_toBottomOf="@+id/llegoLT" />
+
+    <ImageView
+        android:id="@+id/aceptoImg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="12dp"
+        app:layout_constraintStart_toStartOf="@+id/guideline2"
+        app:layout_constraintTop_toBottomOf="@+id/aceptH"
+        app:srcCompat="@drawable/ic_google_maps" />
+
+    <ImageView
+        android:id="@+id/canceloImg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintStart_toStartOf="@+id/guideline2"
+        app:layout_constraintTop_toBottomOf="@+id/cancelR"
+        app:srcCompat="@drawable/ic_google_maps" />
 
 
 </android.support.constraint.ConstraintLayout>

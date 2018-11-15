@@ -65,10 +65,6 @@ class RiderAdaptador(val viaje: MutableList<ViajeRiderDetalle>) : RecyclerView.A
         val dato = viaje.get(position)
         var bd = ControladorBD(holder.view.context)
 
-        holder.view.cancelLT.visibility = View.GONE
-        holder.view.aceptLT.visibility = View.GONE
-        holder.view.llegoLT.visibility = View.GONE
-
 
         if (dato.estatus == "TRIP_ENDED") {
             ocultar_cancelados(holder)
@@ -125,12 +121,59 @@ class RiderAdaptador(val viaje: MutableList<ViajeRiderDetalle>) : RecyclerView.A
 
             holder.view.aceptH.text = dato.supply_accept_time
 
+            if (dato.supply_cancel_location != null) {
+                holder.view.canceloImg.setOnClickListener {
+                    val args = Bundle()
+                    args.putString("cordenadas", dato.supply_cancel_location)
+                    val fragmento = UbicacionMapa()
+                    fragmento.arguments = args
+                    (holder.view.context as AppCompatActivity).supportFragmentManager
+                            .beginTransaction()
+                            .add(R.id.Frame, fragmento, "MAPA")
+                            .addToBackStack(null)
+                            .commit()
+                }
+            } else {
+                holder.view.cancelLT.visibility = View.GONE
+                holder.view.canceloImg.visibility = View.GONE
+            }
+
+            if (dato.supply_accept_location != null) {
+                holder.view.aceptoImg.setOnClickListener {
+                    val args = Bundle()
+                    args.putString("cordenadas", dato.supply_accept_location)
+                    val fragmento = UbicacionMapa()
+                    fragmento.arguments = args
+                    (holder.view.context as AppCompatActivity).supportFragmentManager
+                            .beginTransaction()
+                            .add(R.id.Frame, fragmento, "MAPA")
+                            .addToBackStack(null)
+                            .commit()
+                }
+            } else {
+                holder.view.aceptLT.visibility = View.GONE
+                holder.view.aceptoImg.visibility = View.GONE
+            }
+
+
             if (dato.supply_arrive_location != null) {
                 holder.view.aceptH.text = dato.supply_arrive_time
+                holder.view.llegoImg.setOnClickListener {
+                    val args = Bundle()
+                    args.putString("cordenadas", dato.supply_arrive_location)
+                    val fragmento = UbicacionMapa()
+                    fragmento.arguments = args
+                    (holder.view.context as AppCompatActivity).supportFragmentManager
+                            .beginTransaction()
+                            .add(R.id.Frame, fragmento, "MAPA")
+                            .addToBackStack(null)
+                            .commit()
+                }
             } else {
                 holder.view.llegoH.visibility = View.GONE
                 holder.view.llegoHT.visibility = View.GONE
                 holder.view.llegoLT.visibility = View.GONE
+                holder.view.llegoImg.visibility = View.GONE
             }
 
         }
@@ -156,6 +199,10 @@ class RiderAdaptador(val viaje: MutableList<ViajeRiderDetalle>) : RecyclerView.A
         holder.view.llegoHT.visibility = View.GONE
         holder.view.llegoH.visibility = View.GONE
         holder.view.llegoLT.visibility = View.GONE
+
+        holder.view.canceloImg.visibility = View.GONE
+        holder.view.aceptoImg.visibility = View.GONE
+        holder.view.llegoImg.visibility = View.GONE
     }
 }
 
