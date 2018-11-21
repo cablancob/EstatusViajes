@@ -114,12 +114,9 @@ class ConsultaViajes : Fragment() {
                             dialogo.setCancelable(false)
                             val dialogo_show = dialogo.show()
 
-                            GlobalScope.launch {
-                                AppEndPointData(fechaConsultaI, fechaConsultaF)
-                            }
-                            GlobalScope.launch {
-                                CallCenterEndPointData(DesdeContenido.text.toString(), HastaContenido.text.toString())
-                            }
+                            AppEndPointData(fechaConsultaI, fechaConsultaF)
+                            CallCenterEndPointData(DesdeContenido.text.toString(), HastaContenido.text.toString())
+
                             GlobalScope.launch {
                                 semaforo.await()
                                 activity!!.runOnUiThread {
@@ -198,7 +195,7 @@ class ConsultaViajes : Fragment() {
         }
 
         //DEBUG
-        //url = url + "?start=1533096000&end=1533268799"
+        //url = url + "?start=1538411600&stop=1538452799"
         val client = OkHttpClient()
 
 
@@ -218,92 +215,42 @@ class ConsultaViajes : Fragment() {
             }
 
             override fun onResponse(call: Call?, response: Response?) {
-                val list: MutableList<Viajes>
-                val listType = object : TypeToken<List<Viajes>>() {
 
-                }.type
+                GlobalScope.launch {
+                    val list: MutableList<Viajes>
+                    val listType = object : TypeToken<List<Viajes>>() {
 
-                if (DesdeContenido.text != "AAAA-MM-DD") {
+                    }.type
 
-                    cal = Calendar.getInstance()
-                    cal.set(Calendar.YEAR, DesdeContenido.text.split("-")[0].toInt())
-                    cal.set(Calendar.MONTH, DesdeContenido.text.split("-")[1].toInt() - 1)
-                    cal.set(Calendar.DATE, DesdeContenido.text.split("-")[2].toInt())
+                    if (DesdeContenido.text != "AAAA-MM-DD") {
 
-                } else {
-                    cal = Calendar.getInstance()
-                    cal.set(Calendar.YEAR, 2018)
-                    cal.set(Calendar.MONTH, 2)
-                    cal.set(Calendar.DATE, 9)
-                }
-
-
-
-                list = GsonBuilder().create().fromJson(response?.body()?.string(), listType)
-
-                val jdf = SimpleDateFormat(formatoFecha)
-                jdf.timeZone = TimeZone.getTimeZone("GMT-4")
-                val hora = SimpleDateFormat(formatoHora)
-                hora.timeZone = TimeZone.getTimeZone("GMT-4")
-
-                list.forEach {
-                    if (it.desc.trim() != "TRIP_CANCELLED") {
-                        val date = Date(it.request_time.split(".").get(0).toInt() * 1000L)
-                        // format of the date
-
-
-                        bd!!.Insert(
-                                Viajes(it.desc.trim(),
-                                        jdf.format(date).trim(),
-                                        it.demand.split(":")[1].trim(),
-                                        when {
-                                            it.supply == null -> {
-                                                "-"
-                                            }
-                                            else -> {
-                                                it.supply.split(":")[1].trim()
-                                            }
-
-                                        },
-                                        hora.format(date).toString().trim(),
-                                        features(it.features.origin, it.features.destination),
-                                        billing(fare(it.billing.fare.amount)),
-                                        when {
-                                            it.supply_accept_time == null -> {
-                                                "-"
-                                            }
-                                            else -> {
-                                                hora.format(Date(it.supply_accept_time.split(".").get(0).toInt() * 1000L)).toString().trim()
-                                            }
-                                        },
-                                        it.cancel_reason,
-                                        it.user_cancel,
-                                        when {
-                                            it.supply_arrive_time == null -> {
-                                                "-"
-                                            }
-                                            else -> {
-                                                hora.format(Date(it.supply_arrive_time.split(".").get(0).toInt() * 1000L)).toString().trim()
-                                            }
-                                        },
-                                        it.supply_arrive_location,
-                                        it.supply_accept_location,
-                                        it.supply_cancel_location,
-                                        when {
-                                            it.cancel_time == null -> {
-                                                "-"
-                                            }
-                                            else -> {
-                                                hora.format(Date(it.cancel_time.split(".").get(0).toInt() * 1000L)).toString().trim()
-                                            }
-                                        }, "A"
-                                )
-                        )
+                        cal = Calendar.getInstance()
+                        cal.set(Calendar.YEAR, DesdeContenido.text.split("-")[0].toInt())
+                        cal.set(Calendar.MONTH, DesdeContenido.text.split("-")[1].toInt() - 1)
+                        cal.set(Calendar.DATE, DesdeContenido.text.split("-")[2].toInt())
 
                     } else {
-                        var cancelado = it
-                        if (cancelado.supply_accept_location != null) {
+                        cal = Calendar.getInstance()
+                        cal.set(Calendar.YEAR, 2018)
+                        cal.set(Calendar.MONTH, 2)
+                        cal.set(Calendar.DATE, 9)
+                    }
+
+
+
+                    list = GsonBuilder().create().fromJson(response?.body()?.string(), listType)
+
+                    val jdf = SimpleDateFormat(formatoFecha)
+                    jdf.timeZone = TimeZone.getTimeZone("GMT-4")
+                    val hora = SimpleDateFormat(formatoHora)
+                    hora.timeZone = TimeZone.getTimeZone("GMT-4")
+
+                    list.forEach {
+                        if (it.desc.trim() != "TRIP_CANCELLED") {
                             val date = Date(it.request_time.split(".").get(0).toInt() * 1000L)
+                            // format of the date
+
+
                             bd!!.Insert(
                                     Viajes(it.desc.trim(),
                                             jdf.format(date).trim(),
@@ -351,12 +298,65 @@ class ConsultaViajes : Fragment() {
                                             }, "A"
                                     )
                             )
-                        }
 
+                        } else {
+                            var cancelado = it
+                            if (cancelado.supply_accept_location != null) {
+                                val date = Date(it.request_time.split(".").get(0).toInt() * 1000L)
+                                bd!!.Insert(
+                                        Viajes(it.desc.trim(),
+                                                jdf.format(date).trim(),
+                                                it.demand.split(":")[1].trim(),
+                                                when {
+                                                    it.supply == null -> {
+                                                        "-"
+                                                    }
+                                                    else -> {
+                                                        it.supply.split(":")[1].trim()
+                                                    }
+
+                                                },
+                                                hora.format(date).toString().trim(),
+                                                features(it.features.origin, it.features.destination),
+                                                billing(fare(it.billing.fare.amount)),
+                                                when {
+                                                    it.supply_accept_time == null -> {
+                                                        "-"
+                                                    }
+                                                    else -> {
+                                                        hora.format(Date(it.supply_accept_time.split(".").get(0).toInt() * 1000L)).toString().trim()
+                                                    }
+                                                },
+                                                it.cancel_reason,
+                                                it.user_cancel,
+                                                when {
+                                                    it.supply_arrive_time == null -> {
+                                                        "-"
+                                                    }
+                                                    else -> {
+                                                        hora.format(Date(it.supply_arrive_time.split(".").get(0).toInt() * 1000L)).toString().trim()
+                                                    }
+                                                },
+                                                it.supply_arrive_location,
+                                                it.supply_accept_location,
+                                                it.supply_cancel_location,
+                                                when {
+                                                    it.cancel_time == null -> {
+                                                        "-"
+                                                    }
+                                                    else -> {
+                                                        hora.format(Date(it.cancel_time.split(".").get(0).toInt() * 1000L)).toString().trim()
+                                                    }
+                                                }, "A"
+                                        )
+                                )
+                            }
+
+                        }
                     }
+                    semaforo.countDown()
+                    println("FIN DEL CICLO APP")
                 }
-                semaforo.countDown()
-                println("FIN DEL CICLO APP")
             }
         }
         )
@@ -394,42 +394,43 @@ class ConsultaViajes : Fragment() {
             }
 
             override fun onResponse(call: Call, response: Response) {
-                val list: MutableList<CallCenterData>
-                val listType = object : TypeToken<List<CallCenterData>>() {
 
-                }.type
-                var data = response.body()?.string()?.trim()
-                if (data != "") {
-                    list = GsonBuilder().create().fromJson(data, listType)
+                GlobalScope.launch {
+                    val list: MutableList<CallCenterData>
+                    val listType = object : TypeToken<List<CallCenterData>>() {
 
+                    }.type
+                    var data = response.body()?.string()?.trim()
+                    if (data != "") {
+                        list = GsonBuilder().create().fromJson(data, listType)
 
-                    list.forEach {
-                        bd!!.Insert(Viajes(
-                                "TRIP_ENDED",
-                                it.date_ride,
-                                it.rider,
-                                it.driver,
-                                "-",
-                                features(it.origin, it.destination),
-                                billing(fare(it.tks)),
-                                "-",
-                                "-",
-                                "-",
-                                "-",
-                                "-",
-                                "-",
-                                "-",
-                                "-",
-                                "C"
-                        ))
+                        list.forEach {
+                            bd!!.Insert(Viajes(
+                                    "TRIP_ENDED",
+                                    it.date_ride,
+                                    it.rider,
+                                    it.driver,
+                                    "-",
+                                    features(it.origin, it.destination),
+                                    billing(fare(it.tks)),
+                                    "-",
+                                    "-",
+                                    "-",
+                                    "-",
+                                    "-",
+                                    "-",
+                                    "-",
+                                    "-",
+                                    "C"
+                            ))
+                        }
+                        println("FIN DEL CICLO CALL")
+                        semaforo.countDown()
+                    } else {
+                        semaforo.countDown()
                     }
-                    println("FIN DEL CICLO CALL")
-                    semaforo.countDown()
-                } else {
-                    semaforo.countDown()
                 }
             }
-
         })
 
 

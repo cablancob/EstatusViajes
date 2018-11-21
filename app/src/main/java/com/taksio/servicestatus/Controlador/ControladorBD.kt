@@ -37,25 +37,47 @@ class ControladorBD(context: Context) : SQLiteOpenHelper(context, NOMBRE_BD, nul
     }
 
     fun Insert(viajes: Viajes) {
-        valores = ContentValues()
-        valores.put(Tablas.Personas.COLUMNA_FECHA, viajes.request_time)
-        valores.put(Tablas.Personas.COLUMNA_DESC, viajes.desc)
-        valores.put(Tablas.Personas.COLUMNA_HORA, viajes.hora)
-        valores.put(Tablas.Personas.COLUMNA_DEMAND, viajes.demand)
-        valores.put(Tablas.Personas.COLUMNA_SUPPLY, viajes.supply)
-        valores.put(Tablas.Personas.COLUMNA_ORIGIN, viajes.features.origin)
-        valores.put(Tablas.Personas.COLUMNA_DESTINO, viajes.features.destination)
-        valores.put(Tablas.Personas.COLUMNA_TKS, viajes.billing.fare.amount)
-        valores.put(Tablas.Personas.COLUMNA_SUPPLY_ACCEPT_TIME, viajes.supply_accept_time)
-        valores.put(Tablas.Personas.COLUMNA_CANCEL_REASON, viajes.cancel_reason)
-        valores.put(Tablas.Personas.COLUMNA_USER_CANCEL, viajes.user_cancel)
-        valores.put(Tablas.Personas.COLUMNA_SUPPLY_ARRIVE_TIME, viajes.supply_arrive_time)
-        valores.put(Tablas.Personas.COLUMNA_SUPPLY_ARRIVE_LOCATION, viajes.supply_arrive_location)
-        valores.put(Tablas.Personas.COLUMNA_SUPPLY_ACCEPT_LOCATION, viajes.supply_accept_location)
-        valores.put(Tablas.Personas.COLUMNA_SUPPLY_CANCEL_LOCATION, viajes.supply_cancel_location)
-        valores.put(Tablas.Personas.COLUMNA_CANCEL_TIME, viajes.cancel_time)
-        valores.put(Tablas.Personas.COLUMNA_DATA_FROM, viajes.data_from)
-        bd.insert(Tablas.Personas.NOMBRE_TABLA, null, valores)
+
+        bd.execSQL("INSERT INTO ${Tablas.Personas.NOMBRE_TABLA} " +
+                "( " +
+                "${Tablas.Personas.COLUMNA_FECHA} ," +
+                "${Tablas.Personas.COLUMNA_DESC} ," +
+                "${Tablas.Personas.COLUMNA_HORA} ," +
+                "${Tablas.Personas.COLUMNA_DEMAND} ," +
+                "${Tablas.Personas.COLUMNA_SUPPLY} ," +
+                "${Tablas.Personas.COLUMNA_ORIGIN} ," +
+                "${Tablas.Personas.COLUMNA_DESTINO} ," +
+                "${Tablas.Personas.COLUMNA_TKS} ," +
+                "${Tablas.Personas.COLUMNA_SUPPLY_ACCEPT_TIME} ," +
+                "${Tablas.Personas.COLUMNA_CANCEL_REASON} ," +
+                "${Tablas.Personas.COLUMNA_USER_CANCEL} ," +
+                "${Tablas.Personas.COLUMNA_SUPPLY_ARRIVE_TIME} ," +
+                "${Tablas.Personas.COLUMNA_SUPPLY_ARRIVE_LOCATION} ," +
+                "${Tablas.Personas.COLUMNA_SUPPLY_ACCEPT_LOCATION} ," +
+                "${Tablas.Personas.COLUMNA_SUPPLY_CANCEL_LOCATION} ," +
+                "${Tablas.Personas.COLUMNA_CANCEL_TIME} ," +
+                "${Tablas.Personas.COLUMNA_DATA_FROM} " +
+                ") " +
+                "VALUES " +
+                "( " +
+                "'${viajes.request_time}', " +
+                "'${viajes.desc}', " +
+                "'${viajes.hora}', " +
+                "'${viajes.demand}', " +
+                "'${viajes.supply}', " +
+                "'${viajes.features.origin?.replace("'", "")}', " +
+                "'${viajes.features.destination?.replace("'", "")}', " +
+                "'${viajes.billing.fare.amount}', " +
+                "'${viajes.supply_accept_time}', " +
+                "'${viajes.cancel_reason}', " +
+                "'${viajes.user_cancel}', " +
+                "'${viajes.supply_arrive_time}', " +
+                "'${viajes.supply_arrive_location}', " +
+                "'${viajes.supply_accept_location}', " +
+                "'${viajes.supply_cancel_location}', " +
+                "'${viajes.cancel_time}', " +
+                "'${viajes.data_from}' " +
+                ") ")
     }
 
 

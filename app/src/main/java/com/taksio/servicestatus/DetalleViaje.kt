@@ -121,7 +121,7 @@ class RiderAdaptador(val viaje: MutableList<ViajeRiderDetalle>) : RecyclerView.A
 
             holder.view.aceptH.text = dato.supply_accept_time
 
-            if (dato.supply_cancel_location != null) {
+            if (dato.supply_cancel_location != "null") {
                 holder.view.canceloImg.setOnClickListener {
                     val args = Bundle()
                     args.putString("cordenadas", dato.supply_cancel_location)
@@ -138,7 +138,7 @@ class RiderAdaptador(val viaje: MutableList<ViajeRiderDetalle>) : RecyclerView.A
                 holder.view.canceloImg.visibility = View.GONE
             }
 
-            if (dato.supply_accept_location != null) {
+            if (dato.supply_accept_location != "null") {
                 holder.view.aceptoImg.setOnClickListener {
                     val args = Bundle()
                     args.putString("cordenadas", dato.supply_accept_location)
@@ -156,8 +156,8 @@ class RiderAdaptador(val viaje: MutableList<ViajeRiderDetalle>) : RecyclerView.A
             }
 
 
-            if (dato.supply_arrive_location != null) {
-                holder.view.aceptH.text = dato.supply_arrive_time
+            if (dato.supply_arrive_location != "null") {
+                holder.view.llegoH.text = dato.supply_arrive_time
                 holder.view.llegoImg.setOnClickListener {
                     val args = Bundle()
                     args.putString("cordenadas", dato.supply_arrive_location)
