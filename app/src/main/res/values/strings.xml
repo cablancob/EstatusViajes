@@ -8,4 +8,5 @@
     <string name="CANCEL_MISMATCH_ID">No concuerda el perfil</string>
     <string name="CANCEL_OTHER">Otros</string>
     <string name="PRESIONAR_BARRA">PRESIONE UNA BARRA PARA VER MAS DETALLES</string>
+    <string name="google_maps_key">AIzaSyAa9Zr-0WnTYXcR3vzk53Ppww6paE-dRLg</string>
 </resources>

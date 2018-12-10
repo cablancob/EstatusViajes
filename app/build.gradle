@@ -7,7 +7,7 @@ apply plugin: 'kotlin-android-extensions'
 android {
     signingConfigs {
         config {
-            keyAlias 'CarlosBlanco'
+            keyAlias 'Carlos'
             keyPassword '14519963'
             storeFile file('/home/taksioweb-01/Carlos.jks')
             storePassword '14519963'
