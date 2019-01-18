@@ -7,7 +7,7 @@ apply plugin: 'kotlin-android-extensions'
 android {
     signingConfigs {
         config {
-            keyAlias 'Carlos'
+            keyAlias 'CarlosBlanco'
             keyPassword '14519963'
             storeFile file('/home/taksioweb-01/Carlos.jks')
             storePassword '14519963'
@@ -19,8 +19,8 @@ android {
         applicationId "com.taksio.servicestatus"
         minSdkVersion 22
         targetSdkVersion 27
-        versionCode 9
-        versionName '1.4.5'
+        versionCode 10
+        versionName '1.4.6'
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
